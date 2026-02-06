@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benable Business Dashboard — Upgrade Prototype</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f3f4f6; color: #1e1e2f; line-height: 1.5; }
+  a { color: #7c3aed; text-decoration: none; }
+
+  /* ── Top Sticky Upgrade Bar ── */
+  .upgrade-bar {
+    position: sticky; top: 0; z-index: 100;
+    background: linear-gradient(90deg, #7c3aed 0%, #a855f7 100%);
+    color: #fff; text-align: center;
+    padding: 10px 20px; font-size: 14px;
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+  }
+  .upgrade-bar span { opacity: 0.9; }
+  .upgrade-bar strong { opacity: 1; }
+  .upgrade-bar .bar-btn {
+    background: #fff; color: #7c3aed; border: none; border-radius: 6px;
+    padding: 6px 16px; font-weight: 600; font-size: 13px; cursor: pointer;
+    transition: transform .15s;
+  }
+  .upgrade-bar .bar-btn:hover { transform: scale(1.04); }
+  .upgrade-bar .bar-close {
+    position: absolute; right: 16px; background: none; border: none;
+    color: rgba(255,255,255,.7); font-size: 18px; cursor: pointer;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: #fff; border-bottom: 1px solid #e5e7eb;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 24px; position: sticky; top: 42px; z-index: 90;
+  }
+  .header-left { display: flex; align-items: center; gap: 12px; }
+  .header-logo { width: 28px; height: 28px; background: #7c3aed; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 14px; }
+  .header-title { font-size: 15px; color: #6b7280; }
+  .header-title strong { color: #1e1e2f; }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .btn-view-page {
+    display: flex; align-items: center; gap: 6px;
+    border: 1px solid #e5e7eb; background: #fff; border-radius: 8px;
+    padding: 7px 14px; font-size: 13px; color: #374151; cursor: pointer;
+  }
+  .btn-view-page:hover { background: #f9fafb; }
+  .avatar {
+    width: 32px; height: 32px; background: #7c3aed; border-radius: 50%; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;
+    cursor: pointer; transition: box-shadow .15s;
+  }
+  .avatar:hover { box-shadow: 0 0 0 3px rgba(124,58,237,.3); }
+
+  /* ── Layout ── */
+  .layout { display: flex; min-height: calc(100vh - 90px); }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: 260px; background: #fff; border-right: 1px solid #e5e7eb;
+    padding: 20px 0; display: flex; flex-direction: column;
+    position: sticky; top: 90px; height: calc(100vh - 90px);
+    z-index: 10;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px; font-size: 14px; color: #6b7280;
+    cursor: pointer; border-left: 3px solid transparent;
+    transition: all .15s; position: relative;
+  }
+  .nav-item:hover { background: #f9fafb; color: #374151; }
+  .nav-item.active { color: #7c3aed; border-left-color: #7c3aed; background: #faf5ff; font-weight: 600; }
+  .nav-item .nav-icon { width: 20px; text-align: center; font-size: 15px; }
+  .nav-item.locked-nav { color: #b0b5bf; }
+  .nav-item.locked-nav:hover { color: #9ca3af; background: #f9fafb; }
+  .nav-item.locked-nav .nav-icon { color: #c9cdd4; }
+  .nav-item.locked-nav .lock-icon-sm { margin-left: auto; color: #c9cdd4; font-size: 12px; }
+
+  /* Tooltip for locked nav items */
+  .nav-item.locked-nav::after {
+    content: 'Upgrade to Standard to unlock!';
+    position: absolute; left: 100%; top: 50%; transform: translateY(-50%);
+    background: #1e1e2f; color: #fff; font-size: 12px; font-weight: 500;
+    padding: 6px 12px; border-radius: 6px; white-space: nowrap;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+    margin-left: 8px; z-index: 1000;
+  }
+  .nav-item.locked-nav::before {
+    content: '';
+    position: absolute; left: 100%; top: 50%; transform: translateY(-50%);
+    border: 5px solid transparent; border-right-color: #1e1e2f;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+    margin-left: -2px; z-index: 1000;
+  }
+  .nav-item.locked-nav:hover::after,
+  .nav-item.locked-nav:hover::before { opacity: 1; }
+
+  .sidebar-spacer { flex: 1; }
+
+  .sidebar-upgrade {
+    margin: 0 16px; padding: 16px;
+    background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 100%);
+    border: 1px solid #ddd6fe; border-radius: 12px;
+  }
+  .sidebar-upgrade h4 { font-size: 14px; color: #7c3aed; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+  .sidebar-upgrade p { font-size: 12px; color: #6b7280; margin-bottom: 12px; }
+  .sidebar-upgrade .upgrade-btn {
+    display: block; width: 100%; text-align: center;
+    background: #7c3aed; color: #fff; border: none; border-radius: 8px;
+    padding: 8px 0; font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: background .15s;
+  }
+  .sidebar-upgrade .upgrade-btn:hover { background: #6d28d9; }
+
+  .sidebar-help {
+    padding: 12px 20px; font-size: 13px; color: #9ca3af;
+    display: flex; align-items: center; gap: 8px; margin-top: 12px;
+  }
+
+  /* ── Main Content ── */
+  .main { flex: 1; padding: 28px 32px; max-width: 960px; }
+  .page-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .page-subtitle { font-size: 14px; color: #9ca3af; margin-bottom: 24px; }
+
+  /* ── Cards ── */
+  .card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+    padding: 24px; margin-bottom: 20px;
+  }
+  .card h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+  .card .card-sub { font-size: 13px; color: #9ca3af; margin-bottom: 16px; }
+
+  /* ── Credibility Score ── */
+  .score-card {
+    background: #fff;
+    border: 2px solid #e5e7eb;
+    display: flex; gap: 32px; align-items: flex-start;
+  }
+  .score-ring-container { flex-shrink: 0; text-align: center; }
+  .score-ring { position: relative; width: 130px; height: 130px; }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring .ring-bg { fill: none; stroke: #e5e7eb; stroke-width: 10; }
+  .score-ring .ring-fill { fill: none; stroke: #f59e0b; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset .8s ease; }
+  .score-ring .ring-fill.good { stroke: #7c3aed; }
+  .score-number {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 32px; font-weight: 800; color: #f59e0b;
+  }
+  .score-number.good { color: #7c3aed; }
+  .score-label { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+  .score-details { flex: 1; }
+  .score-details h3 { font-size: 18px; margin-bottom: 2px; }
+  .score-details .score-explainer { font-size: 13px; color: #6b7280; margin-bottom: 14px; }
+  .score-checklist { list-style: none; }
+  .score-checklist li {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 0; font-size: 13px; border-bottom: 1px solid #f3f4f6;
+  }
+  .score-checklist li:last-child { border-bottom: none; }
+  .score-checklist .check { color: #10b981; font-size: 13px; width: 16px; text-align: center; }
+  .score-checklist .locked { color: #d1d5db; font-size: 12px; width: 16px; text-align: center; }
+  .score-checklist .locked-text { color: #9ca3af; }
+  .score-cta {
+    margin-top: 14px;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #7c3aed; color: #fff; border: none; border-radius: 8px;
+    padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .score-cta:hover { background: #6d28d9; }
+
+  /* ── Overview Stats ── */
+  .overview-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;
+  }
+  .overview-stat-card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+    padding: 20px 24px;
+  }
+  .overview-stat-card .stat-header {
+    font-size: 13px; color: #6b7280; margin-bottom: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .overview-stat-card .stat-header .stat-badge {
+    background: #dbeafe; color: #2563eb; font-size: 12px; font-weight: 600;
+    padding: 2px 8px; border-radius: 12px;
+  }
+  .overview-stat-card .stat-value {
+    font-size: 36px; font-weight: 800; color: #1e1e2f; line-height: 1.1;
+  }
+  .overview-stat-card .stat-sub {
+    font-size: 12px; color: #9ca3af; margin-top: 2px;
+  }
+  .overview-stat-card .stars-display {
+    display: inline-flex; align-items: center; gap: 4px; margin-left: 8px;
+  }
+  .overview-stat-card .stars-display i { color: #f59e0b; font-size: 16px; }
+
+  /* ── Quick Actions ── */
+  .quick-actions-label {
+    font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase;
+    letter-spacing: .5px; margin-bottom: 10px;
+  }
+  .quick-actions {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px;
+  }
+  .quick-action {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 10px;
+    padding: 14px 18px; display: flex; align-items: center; gap: 12px;
+    cursor: pointer; transition: all .15s; font-size: 14px; color: #374151;
+  }
+  .quick-action:hover { background: #f9fafb; border-color: #d1d5db; }
+  .quick-action .qa-icon {
+    width: 36px; height: 36px; background: #f3f4f6; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; color: #6b7280;
+  }
+  .quick-action .qa-arrow { margin-left: auto; color: #d1d5db; font-size: 13px; }
+
+  /* ── Gated / Blurred Sections ── */
+  .gated-section { position: relative; overflow: hidden; }
+  .gated-content {
+    filter: blur(5px); pointer-events: none; user-select: none; opacity: .6;
+  }
+  .gated-overlay {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.55); backdrop-filter: blur(1px);
+    z-index: 2; text-align: center; padding: 20px;
+  }
+  .gated-overlay .lock-icon { font-size: 28px; margin-bottom: 8px; color: #7c3aed; }
+  .gated-overlay h4 { font-size: 16px; margin-bottom: 4px; }
+  .gated-overlay p { font-size: 13px; color: #6b7280; max-width: 340px; margin-bottom: 14px; }
+  .gated-overlay .gated-btn {
+    background: #7c3aed; color: #fff; border: none; border-radius: 8px;
+    padding: 10px 24px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .gated-overlay .gated-btn:hover { background: #6d28d9; }
+
+  /* ── Contextual Upgrade Banners ── */
+  .ctx-banner {
+    display: flex; align-items: center; gap: 12px;
+    background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 10px;
+    padding: 14px 18px; margin-bottom: 20px; font-size: 13px;
+  }
+  .ctx-banner .ctx-icon { font-size: 18px; flex-shrink: 0; color: #7c3aed; }
+  .ctx-banner .ctx-text { flex: 1; }
+  .ctx-banner .ctx-text strong { color: #6d28d9; }
+  .ctx-banner .ctx-btn {
+    flex-shrink: 0; background: #7c3aed; color: #fff; border: none;
+    border-radius: 6px; padding: 7px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
+  }
+
+  /* ── Fake Chart ── */
+  .fake-chart { display: flex; align-items: flex-end; gap: 8px; height: 120px; padding: 12px 0; }
+  .fake-chart .bar {
+    flex: 1; background: linear-gradient(180deg, #a78bfa 0%, #7c3aed 100%);
+    border-radius: 4px 4px 0 0; min-width: 20px;
+  }
+  .fake-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .fake-stat { text-align: center; }
+  .fake-stat .num { font-size: 24px; font-weight: 700; color: #7c3aed; }
+  .fake-stat .label { font-size: 12px; color: #9ca3af; }
+
+  /* ── Alerts List ── */
+  .alert-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid #f3f4f6;
+  }
+  .alert-item .alert-icon {
+    width: 36px; height: 36px; border-radius: 50%; background: #e0e7ff;
+    display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; color: #6b7280;
+  }
+  .alert-item .alert-icon.ig { background: #fce7f3; color: #db2777; }
+  .alert-item .alert-icon.tt { background: #f0fdf4; color: #16a34a; }
+  .alert-item .alert-icon.goog { background: #eff6ff; color: #2563eb; }
+  .alert-item .alert-icon.reddit { background: #fef2f2; color: #ef4444; }
+  .alert-item .alert-body { flex: 1; }
+  .alert-item .alert-body .alert-title { font-size: 13px; font-weight: 600; }
+  .alert-item .alert-body .alert-desc { font-size: 12px; color: #6b7280; }
+  .alert-item .alert-time { font-size: 11px; color: #9ca3af; white-space: nowrap; }
+
+  /* ── Business Page Editor ── */
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 4px; }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%; border: 1px solid #e5e7eb; border-radius: 8px;
+    padding: 10px 12px; font-size: 14px; font-family: inherit;
+  }
+  .form-group textarea { height: 80px; resize: vertical; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .tab-bar { display: flex; gap: 0; border-bottom: 2px solid #e5e7eb; margin-bottom: 20px; }
+  .tab-bar .tab {
+    padding: 10px 20px; font-size: 14px; color: #6b7280; cursor: pointer;
+    border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s;
+  }
+  .tab-bar .tab.active { color: #7c3aed; border-bottom-color: #7c3aed; font-weight: 600; }
+  .tab-bar .tab:hover { color: #374151; }
+
+  /* ── CTA Editor Teaser ── */
+  .cta-editor-teaser {
+    border: 2px dashed #ddd6fe; border-radius: 12px; padding: 20px;
+    text-align: center; background: #faf5ff;
+  }
+  .cta-editor-teaser h4 { font-size: 15px; color: #7c3aed; margin-bottom: 4px; }
+  .cta-editor-teaser p { font-size: 13px; color: #6b7280; margin-bottom: 12px; }
+  .cta-editor-teaser .mock-cta {
+    display: inline-block; background: #e9d5ff; color: #7c3aed;
+    padding: 10px 28px; border-radius: 8px; font-weight: 600; font-size: 14px;
+    opacity: .6; margin-bottom: 12px;
+  }
+  .cta-editor-teaser .gated-btn {
+    background: #7c3aed; color: #fff; border: none; border-radius: 8px;
+    padding: 8px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+  }
+
+  /* ── Awards ── */
+  .empty-state {
+    text-align: center; padding: 40px 20px; border: 2px dashed #e5e7eb; border-radius: 12px;
+  }
+  .empty-state .empty-icon { font-size: 36px; margin-bottom: 8px; color: #d1d5db; }
+  .empty-state h4 { font-size: 16px; margin-bottom: 4px; }
+  .empty-state p { font-size: 13px; color: #9ca3af; margin-bottom: 16px; }
+  .btn-add {
+    background: #7c3aed; color: #fff; border: none; border-radius: 8px;
+    padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+
+  /* ── Page Sections (hidden by default) ── */
+  .page-section { display: none; }
+  .page-section.active { display: block; }
+
+  /* ── Owner Preview Page ── */
+  .owner-banner {
+    background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+    color: #78350f; text-align: center; padding: 14px 20px;
+    font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 12px;
+  }
+  .owner-banner strong { font-weight: 700; }
+  .owner-banner .owner-btn {
+    background: #7c3aed; color: #fff; border: none; border-radius: 6px;
+    padding: 8px 18px; font-weight: 600; font-size: 13px; cursor: pointer;
+  }
+  .preview-page {
+    max-width: 900px; margin: 0 auto; padding: 20px;
+  }
+  .preview-hero {
+    background: linear-gradient(135deg, #ddd6fe 0%, #e9d5ff 50%, #fae8ff 100%);
+    border-radius: 16px; padding: 40px; text-align: center; margin-bottom: 24px;
+  }
+  .preview-hero .biz-avatar { width: 72px; height: 72px; background: #7c3aed; border-radius: 12px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 28px; font-weight: 800; }
+  .preview-hero h2 { font-size: 24px; }
+  .preview-hero .biz-meta { font-size: 14px; color: #6b7280; margin-top: 4px; }
+  .preview-hero .stars { color: #f59e0b; font-size: 16px; margin-top: 4px; }
+
+  .preview-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .preview-stat-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; text-align: center; }
+  .preview-stat-card .stat-num { font-size: 28px; font-weight: 800; color: #7c3aed; }
+  .preview-stat-card .stat-label { font-size: 12px; color: #9ca3af; }
+
+  .preview-section { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+  .preview-section h3 { font-size: 16px; margin-bottom: 12px; }
+
+  .seo-status-bar {
+    display: flex; align-items: center; gap: 10px;
+    background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px;
+    padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #991b1b;
+  }
+  .seo-status-bar .seo-icon { font-size: 16px; color: #dc2626; }
+  .seo-status-bar .upgrade-link { color: #7c3aed; font-weight: 600; margin-left: 4px; cursor: pointer; }
+
+  .ghost-cta-area {
+    border: 2px dashed #d1d5db; border-radius: 10px; padding: 16px;
+    text-align: center; margin-bottom: 20px; background: #f9fafb;
+  }
+  .ghost-cta-area .ghost-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #e5e7eb; color: #9ca3af;
+    padding: 10px 28px; border-radius: 8px; font-weight: 600; font-size: 14px;
+  }
+  .ghost-cta-area .ghost-label { font-size: 12px; color: #9ca3af; margin-top: 6px; }
+  .ghost-cta-area .ghost-upgrade { font-size: 12px; color: #7c3aed; font-weight: 600; margin-top: 4px; cursor: pointer; }
+
+  /* Back to dashboard btn */
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; font-size: 14px; color: #6b7280;
+    border: 1px solid #e5e7eb; border-radius: 8px; cursor: pointer; background: #fff;
+  }
+  .back-btn:hover { background: #f9fafb; }
+
+  /* ── 24-Hour Nudge Modal ── */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .modal-backdrop.visible { opacity: 1; pointer-events: auto; }
+  .nudge-modal {
+    background: #fff; border-radius: 16px; max-width: 520px; width: 90%;
+    overflow: hidden; transform: scale(.95); transition: transform .25s;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  }
+  .modal-backdrop.visible .nudge-modal { transform: scale(1); }
+  .nudge-header {
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+    color: #fff; padding: 32px 32px 28px; text-align: center;
+  }
+  .nudge-header .nudge-icon { font-size: 28px; margin-bottom: 16px; opacity: .7; }
+  .nudge-header .nudge-big-num { font-size: 64px; font-weight: 900; line-height: 1; letter-spacing: -2px; }
+  .nudge-header h2 { font-size: 18px; font-weight: 600; margin-top: 2px; opacity: .95; }
+  .nudge-header p { font-size: 13px; opacity: .75; margin-top: 8px; }
+  .nudge-body { padding: 28px 32px 20px; }
+  .nudge-body > p { font-size: 14px; color: #374151; line-height: 1.6; margin-bottom: 20px; }
+  .nudge-features { list-style: none; margin: 0 0 24px; }
+  .nudge-features li {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid #f3f4f6;
+    font-size: 14px; color: #374151; line-height: 1.4;
+  }
+  .nudge-features li:last-child { border-bottom: none; }
+  .nudge-features li .nf-icon {
+    width: 32px; height: 32px; border-radius: 8px; background: #f3e8ff;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: #7c3aed; font-size: 14px;
+  }
+  .nudge-features li .nf-text { flex: 1; }
+  .nudge-features li .nf-text strong { color: #1e1e2f; }
+  .nudge-cta {
+    display: block; width: 100%; background: #7c3aed; color: #fff; border: none;
+    border-radius: 10px; padding: 14px; font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: background .15s; margin-bottom: 8px;
+  }
+  .nudge-cta:hover { background: #6d28d9; }
+  .nudge-dismiss {
+    display: block; width: 100%; background: none; border: none;
+    color: #9ca3af; font-size: 13px; cursor: pointer; padding: 8px;
+    text-align: center;
+  }
+  .nudge-dismiss:hover { color: #6b7280; }
+  .nudge-footer {
+    padding: 0 32px 24px; text-align: center;
+    font-size: 12px; color: #b0b5bf;
+  }
+
+  /* ── Utilities ── */
+  .hidden { display: none !important; }
+  .mb-12 { margin-bottom: 12px; }
+  .mb-20 { margin-bottom: 20px; }
+  .text-purple { color: #7c3aed; }
+  .text-sm { font-size: 13px; }
+  .font-bold { font-weight: 600; }
+
+  /* ── Animations ── */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .card, .ctx-banner { animation: fadeIn .3s ease; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ UPGRADE BAR ══════════════════ -->
+<div class="upgrade-bar" id="upgradeBar">
+  <span><i class="fa-solid fa-lock" style="margin-right:4px;"></i> Your page is <strong>not indexed</strong> by search engines or AI. Visitors can't find you yet.</span>
+  <button class="bar-btn" onclick="alert('→ Navigate to subscription page')">Upgrade to Standard <i class="fa-solid fa-arrow-right" style="margin-left:4px;"></i></button>
+  <button class="bar-close" onclick="document.getElementById('upgradeBar').style.display='none'"><i class="fa-solid fa-xmark"></i></button>
+</div>
+
+<!-- ══════════════════ 24-HOUR NUDGE MODAL ══════════════════ -->
+<div class="modal-backdrop" id="nudgeModal">
+  <div class="nudge-modal">
+    <div class="nudge-header">
+      <div class="nudge-big-num">0</div>
+      <h2>search appearances in 24 hours</h2>
+      <p>Your page is live — but no one can find it on Google or AI search yet.</p>
+    </div>
+    <div class="nudge-body">
+      <p>Your page isn't indexed on search engines or AI. Potential customers looking for businesses like yours won't find you. Upgrade to Standard to change that.</p>
+      <ul class="nudge-features">
+        <li>
+          <div class="nf-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
+          <div class="nf-text"><strong>Discoverable</strong> — get indexed on Google, ChatGPT, and AI search</div>
+        </li>
+        <li>
+          <div class="nf-icon"><i class="fa-solid fa-rotate"></i></div>
+          <div class="nf-text"><strong>Fresh</strong> — reviews and mentions update monthly instead of once per year</div>
+        </li>
+        <li>
+          <div class="nf-icon"><i class="fa-solid fa-arrow-pointer"></i></div>
+          <div class="nf-text"><strong>Get new customers</strong> — add a customizable "Book Now" button so visitors take action</div>
+        </li>
+        <li>
+          <div class="nf-icon"><i class="fa-solid fa-bell"></i></div>
+          <div class="nf-text"><strong>Alerts</strong> — get notified when you're mentioned online</div>
+        </li>
+        <li>
+          <div class="nf-icon"><i class="fa-solid fa-chart-line"></i></div>
+          <div class="nf-text"><strong>Analytics</strong> — track page views and see where visitors come from</div>
+        </li>
+      </ul>
+      <button class="nudge-cta" onclick="alert('→ Navigate to subscription page')">Upgrade to Standard</button>
+      <button class="nudge-dismiss" onclick="closeNudge()">I'll stay on the free plan for now</button>
+    </div>
+    <div class="nudge-footer">
+      Cancel anytime. Your page stays live even if you downgrade.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ DASHBOARD VIEW ══════════════════ -->
+<div id="dashboardView">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-logo">B</div>
+      <span class="header-title"><strong>Benable</strong> &nbsp;| &nbsp;Glow with Gigi</span>
+    </div>
+    <div class="header-right">
+      <button class="btn-view-page" onclick="showPage('preview')"><i class="fa-regular fa-eye" style="font-size:13px;"></i> View Page</button>
+      <div class="avatar" onclick="openNudge()" title="Click to preview 24-hour nudge">G</div>
+    </div>
+  </div>
+
+  <div class="layout">
+
+    <!-- ── Sidebar ── -->
+    <div class="sidebar">
+      <div class="nav-item active" onclick="showSection('overview')">
+        <span class="nav-icon"><i class="fa-solid fa-house"></i></span> Overview
+      </div>
+      <div class="nav-item" onclick="showSection('business')">
+        <span class="nav-icon"><i class="fa-regular fa-file-lines"></i></span> Business Page
+      </div>
+      <div class="nav-item locked-nav" onclick="showSection('awards')">
+        <span class="nav-icon"><i class="fa-solid fa-trophy"></i></span> Awards
+        <i class="fa-solid fa-lock lock-icon-sm"></i>
+      </div>
+      <div class="nav-item locked-nav" onclick="showSection('analytics')">
+        <span class="nav-icon"><i class="fa-solid fa-chart-simple"></i></span> Analytics
+        <i class="fa-solid fa-lock lock-icon-sm"></i>
+      </div>
+      <div class="nav-item locked-nav" onclick="showSection('alerts')">
+        <span class="nav-icon"><i class="fa-solid fa-bell"></i></span> Social Mentions
+        <i class="fa-solid fa-lock lock-icon-sm"></i>
+      </div>
+      <div class="nav-item" onclick="showSection('subscription')">
+        <span class="nav-icon"><i class="fa-regular fa-credit-card"></i></span> Subscription
+      </div>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="sidebar-upgrade">
+        <h4><i class="fa-solid fa-bolt"></i> Unlock Your Page</h4>
+        <p>Get found on Google & AI, add your CTA, showcase awards, and track performance.</p>
+        <button class="upgrade-btn" onclick="alert('→ Navigate to subscription page')">Upgrade to Standard</button>
+      </div>
+
+      <div class="sidebar-help"><i class="fa-regular fa-circle-question"></i> Help & Support</div>
+    </div>
+
+    <!-- ── Main ── -->
+    <div class="main">
+
+      <!-- ════════ OVERVIEW ════════ -->
+      <div class="page-section active" id="section-overview">
+        <h1 class="page-title">Welcome back, Glow with Gigi</h1>
+        <p class="page-subtitle">Here's how your Credibility Page is performing</p>
+
+        <!-- Credibility Score -->
+        <div class="card score-card">
+          <div class="score-ring-container">
+            <div class="score-ring">
+              <svg width="130" height="130" viewBox="0 0 130 130">
+                <circle class="ring-bg" cx="65" cy="65" r="56" />
+                <circle class="ring-fill" cx="65" cy="65" r="56"
+                  stroke-dasharray="352" stroke-dashoffset="228" />
+              </svg>
+              <div class="score-number">35%</div>
+            </div>
+            <div class="score-label">Page Credibility Score</div>
+          </div>
+          <div class="score-details">
+            <h3>Your page is 35% optimized</h3>
+            <p class="score-explainer">Upgrade to Standard to unlock the features that drive real results.</p>
+            <ul class="score-checklist">
+              <li><span class="check"><i class="fa-solid fa-circle-check"></i></span> Business info added</li>
+              <li><span class="check"><i class="fa-solid fa-circle-check"></i></span> Reviews imported (12 reviews)</li>
+              <li><span class="check"><i class="fa-solid fa-circle-check"></i></span> Creator mentions found (4 posts)</li>
+              <li><span class="locked"><i class="fa-solid fa-lock"></i></span> <span class="locked-text">SEO & AI search indexing</span></li>
+              <li><span class="locked"><i class="fa-solid fa-lock"></i></span> <span class="locked-text">Custom CTA button (Book Now)</span></li>
+              <li><span class="locked"><i class="fa-solid fa-lock"></i></span> <span class="locked-text">Awards & certifications</span></li>
+              <li><span class="locked"><i class="fa-solid fa-lock"></i></span> <span class="locked-text">Monthly content updates</span></li>
+              <li><span class="locked"><i class="fa-solid fa-lock"></i></span> <span class="locked-text">Analytics & performance tracking</span></li>
+              <li><span class="locked"><i class="fa-solid fa-lock"></i></span> <span class="locked-text">Social & web mention alerts</span></li>
+            </ul>
+            <button class="score-cta" onclick="alert('→ Navigate to subscription page')">Unlock All Features <i class="fa-solid fa-arrow-right" style="margin-left:4px;"></i></button>
+          </div>
+        </div>
+
+        <!-- Overview Stats -->
+        <div class="overview-stats">
+          <div class="overview-stat-card">
+            <div class="stat-header">
+              Total Reviews
+              <span class="stat-badge">+ 3</span>
+            </div>
+            <div class="stat-value">12</div>
+            <div class="stat-sub">across Google & Facebook</div>
+          </div>
+          <div class="overview-stat-card">
+            <div class="stat-header">Average Rating</div>
+            <div class="stat-value" style="display: flex; align-items: center;">
+              5.0
+              <span class="stars-display">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+              </span>
+            </div>
+            <div class="stat-sub">12 reviews</div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions-label">QUICK ACTIONS</div>
+        <div class="quick-actions">
+          <div class="quick-action" onclick="showSection('business'); document.querySelectorAll('.nav-item')[1].click();">
+            <div class="qa-icon"><i class="fa-regular fa-pen-to-square"></i></div>
+            Edit Page
+            <span class="qa-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+          </div>
+          <div class="quick-action" onclick="showSection('subscription'); document.querySelectorAll('.nav-item')[5].click();">
+            <div class="qa-icon"><i class="fa-regular fa-credit-card"></i></div>
+            Subscription
+            <span class="qa-arrow"><i class="fa-solid fa-chevron-right"></i></span>
+          </div>
+        </div>
+
+        <!-- Gated Analytics Preview -->
+        <div class="card gated-section">
+          <div class="gated-overlay">
+            <div class="lock-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <h4>Page Analytics</h4>
+            <p>See how many people view your page, where they come from, and how your search visibility is growing.</p>
+            <button class="gated-btn" onclick="alert('→ Navigate to subscription page')">Upgrade to Unlock Analytics</button>
+          </div>
+          <div class="gated-content">
+            <h3>Page Analytics</h3>
+            <div class="card-sub">Last 30 days</div>
+            <div class="fake-stats">
+              <div class="fake-stat"><div class="num">847</div><div class="label">Page Views</div></div>
+              <div class="fake-stat"><div class="num">124</div><div class="label">Unique Visitors</div></div>
+              <div class="fake-stat"><div class="num">23</div><div class="label">CTA Clicks</div></div>
+            </div>
+            <div class="fake-chart">
+              <div class="bar" style="height:40%"></div>
+              <div class="bar" style="height:55%"></div>
+              <div class="bar" style="height:35%"></div>
+              <div class="bar" style="height:70%"></div>
+              <div class="bar" style="height:85%"></div>
+              <div class="bar" style="height:65%"></div>
+              <div class="bar" style="height:90%"></div>
+              <div class="bar" style="height:75%"></div>
+              <div class="bar" style="height:60%"></div>
+              <div class="bar" style="height:95%"></div>
+              <div class="bar" style="height:80%"></div>
+              <div class="bar" style="height:70%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gated Alerts Preview -->
+        <div class="card gated-section">
+          <div class="gated-overlay">
+            <div class="lock-icon"><i class="fa-solid fa-bell"></i></div>
+            <h4>Latest Social Mentions</h4>
+            <p>You have new social mentions waiting. Upgrade to see when creators and customers talk about your business.</p>
+            <button class="gated-btn" onclick="alert('→ Navigate to subscription page')">Upgrade to See Your Mentions</button>
+          </div>
+          <div class="gated-content">
+            <h3>Latest Social Mentions</h3>
+            <div class="card-sub">New mentions of your business</div>
+            <div class="alert-item">
+              <div class="alert-icon ig"><i class="fa-brands fa-instagram"></i></div>
+              <div class="alert-body">
+                <div class="alert-title">New Instagram mention</div>
+                <div class="alert-desc">@beautybylaura tagged your business in a Story about spray tanning tips</div>
+              </div>
+              <div class="alert-time">2 hours ago</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-icon goog"><i class="fa-brands fa-google"></i></div>
+              <div class="alert-body">
+                <div class="alert-title">New Google Review</div>
+                <div class="alert-desc">Sarah M. left a 5-star review: "Best spray tan I've ever had!"</div>
+              </div>
+              <div class="alert-time">1 day ago</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-icon tt"><i class="fa-brands fa-tiktok"></i></div>
+              <div class="alert-body">
+                <div class="alert-title">New TikTok mention</div>
+                <div class="alert-desc">@chicagoglowups mentioned you in a video with 4.2K views</div>
+              </div>
+              <div class="alert-time">3 days ago</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ════════ BUSINESS PAGE ════════ -->
+      <div class="page-section" id="section-business">
+        <h1 class="page-title">Business Page</h1>
+        <p class="page-subtitle">Edit your public business profile</p>
+
+        <!-- Contextual Banner: CTA -->
+        <div class="ctx-banner">
+          <span class="ctx-icon"><i class="fa-solid fa-rocket"></i></span>
+          <div class="ctx-text">
+            <strong>Your page has no call-to-action button.</strong> Visitors can see your reviews but can't book or contact you. Add a "Book Now" button with Standard.
+          </div>
+          <button class="ctx-btn" onclick="alert('→ Navigate to subscription page')">Add CTA <i class="fa-solid fa-arrow-right" style="margin-left:4px;"></i></button>
+        </div>
+
+        <div class="tab-bar">
+          <div class="tab active">Basic Info</div>
+          <div class="tab">Contact</div>
+          <div class="tab">Media</div>
+          <div class="tab">Hours & Services</div>
+          <div class="tab">More</div>
+        </div>
+
+        <div class="card">
+          <h3>Business Details</h3>
+          <div class="card-sub">Core information about your business</div>
+          <div class="form-group">
+            <label>Business Name</label>
+            <input type="text" value="Glow with Gigi" />
+          </div>
+          <div class="form-group">
+            <label>About</label>
+            <textarea>Glow with Gigi is a mobile spray tanning business serving Chicago, IL, offering airbrush, rapid, and full-body spray tan services.</textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Category</label>
+              <input type="text" value="Spray Tanning" />
+            </div>
+            <div class="form-group">
+              <label>Year Established</label>
+              <input type="text" value="2024" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Website</label>
+            <input type="text" value="https://glowwithgigi.glossgenius.com/" />
+          </div>
+        </div>
+
+        <!-- CTA Editor Teaser -->
+        <div class="cta-editor-teaser">
+          <h4><i class="fa-solid fa-bullhorn" style="margin-right:6px;"></i> Call-to-Action Button</h4>
+          <p>Add a prominent button to your page so visitors can book, buy, or contact you instantly.</p>
+          <div class="mock-cta">Book Now</div>
+          <br />
+          <p style="font-size: 12px; color: #9ca3af;">Preview of how your CTA would appear on your page</p>
+          <button class="gated-btn" onclick="alert('→ Navigate to subscription page')">Upgrade to Enable Your CTA</button>
+        </div>
+      </div>
+
+      <!-- ════════ AWARDS ════════ -->
+      <div class="page-section" id="section-awards">
+        <h1 class="page-title">Awards & Certifications</h1>
+        <p class="page-subtitle">Manage your business awards and certifications</p>
+
+        <!-- Contextual Banner -->
+        <div class="ctx-banner">
+          <span class="ctx-icon"><i class="fa-solid fa-trophy"></i></span>
+          <div class="ctx-text">
+            <strong>Awards & Certifications are a Standard feature.</strong> Showcase your credentials to build trust with potential customers.
+          </div>
+          <button class="ctx-btn" onclick="alert('→ Navigate to subscription page')">Upgrade to Add Awards <i class="fa-solid fa-arrow-right" style="margin-left:4px;"></i></button>
+        </div>
+
+        <div class="card">
+          <div class="empty-state">
+            <div class="empty-icon"><i class="fa-solid fa-trophy"></i></div>
+            <h4>Showcase your achievements</h4>
+            <p>Awards and certifications appear prominently on your Credibility Page, proving to visitors that your business is recognized and trusted.</p>
+            <button class="btn-add" onclick="alert('→ Navigate to subscription page')">Upgrade to Add Awards</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════ ANALYTICS (Full Gated) ════════ -->
+      <div class="page-section" id="section-analytics">
+        <h1 class="page-title">Analytics</h1>
+        <p class="page-subtitle">Track and measure your Credibility Page performance</p>
+
+        <div class="card gated-section" style="min-height: 400px;">
+          <div class="gated-overlay">
+            <div class="lock-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <h4>Unlock Page Analytics</h4>
+            <p>See exactly how many people find your page, where they come from, and how your SEO and AI visibility is improving over time.</p>
+            <button class="gated-btn" onclick="alert('→ Navigate to subscription page')">Upgrade to Standard</button>
+          </div>
+          <div class="gated-content">
+            <h3>Performance Overview</h3>
+            <div class="card-sub">Last 30 days</div>
+            <div class="fake-stats">
+              <div class="fake-stat"><div class="num">847</div><div class="label">Page Views</div></div>
+              <div class="fake-stat"><div class="num">124</div><div class="label">Unique Visitors</div></div>
+              <div class="fake-stat"><div class="num">23</div><div class="label">CTA Clicks</div></div>
+            </div>
+            <div class="fake-chart">
+              <div class="bar" style="height:40%"></div>
+              <div class="bar" style="height:55%"></div>
+              <div class="bar" style="height:35%"></div>
+              <div class="bar" style="height:70%"></div>
+              <div class="bar" style="height:85%"></div>
+              <div class="bar" style="height:65%"></div>
+              <div class="bar" style="height:90%"></div>
+              <div class="bar" style="height:75%"></div>
+              <div class="bar" style="height:60%"></div>
+              <div class="bar" style="height:95%"></div>
+              <div class="bar" style="height:80%"></div>
+              <div class="bar" style="height:70%"></div>
+            </div>
+            <div style="margin-top: 20px;">
+              <h3>Traffic Sources</h3>
+              <div class="card-sub">Where your visitors come from</div>
+              <div style="height: 100px; background: linear-gradient(90deg, #7c3aed 45%, #a855f7 25%, #c4b5fd 15%, #e9d5ff 15%); border-radius: 8px; margin-top: 12px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════ ALERTS (Full Gated) ════════ -->
+      <div class="page-section" id="section-alerts">
+        <h1 class="page-title">Social Mentions</h1>
+        <p class="page-subtitle">Stay on top of new reviews, social mentions, and web activity</p>
+
+        <div class="card gated-section" style="min-height: 350px;">
+          <div class="gated-overlay">
+            <div class="lock-icon"><i class="fa-solid fa-bell"></i></div>
+            <h4>Unlock Social Mentions</h4>
+            <p>Get notified when customers review your business, creators mention you on social media, or your business appears on the web.</p>
+            <button class="gated-btn" onclick="alert('→ Navigate to subscription page')">Upgrade to Standard</button>
+          </div>
+          <div class="gated-content">
+            <h3>Recent Activity</h3>
+            <div class="card-sub">Mentions and reviews from across the web</div>
+            <div class="alert-item">
+              <div class="alert-icon ig"><i class="fa-brands fa-instagram"></i></div>
+              <div class="alert-body">
+                <div class="alert-title">@beautybylaura mentioned you on Instagram</div>
+                <div class="alert-desc">Tagged your business in a Story about spray tanning tips</div>
+              </div>
+              <div class="alert-time">2 hours ago</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-icon goog"><i class="fa-brands fa-google"></i></div>
+              <div class="alert-body">
+                <div class="alert-title">New 5-star Google Review from Sarah M.</div>
+                <div class="alert-desc">"Best spray tan I've ever had! So natural looking."</div>
+              </div>
+              <div class="alert-time">1 day ago</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-icon tt"><i class="fa-brands fa-tiktok"></i></div>
+              <div class="alert-body">
+                <div class="alert-title">@chicagoglowups mentioned you on TikTok</div>
+                <div class="alert-desc">Video with 4.2K views featuring your spray tan service</div>
+              </div>
+              <div class="alert-time">3 days ago</div>
+            </div>
+            <div class="alert-item">
+              <div class="alert-icon reddit"><i class="fa-brands fa-reddit-alien"></i></div>
+              <div class="alert-body">
+                <div class="alert-title">Reddit mention in r/Chicago</div>
+                <div class="alert-desc">Thread: "Best spray tan in Chicago?" — your business was recommended</div>
+              </div>
+              <div class="alert-time">5 days ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════ SUBSCRIPTION ════════ -->
+      <div class="page-section" id="section-subscription">
+        <h1 class="page-title">Subscription</h1>
+        <p class="page-subtitle">Manage your plan and billing preferences</p>
+
+        <div class="card" style="border: 2px solid #fde68a; background: #fffbeb;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 48px; height: 48px; background: #fef3c7; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #f59e0b;"><i class="fa-solid fa-file-lines"></i></div>
+            <div style="flex: 1;">
+              <div style="font-size: 18px; font-weight: 700;">Lite <span style="background: #e5e7eb; color: #6b7280; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; margin-left: 8px;">FREE</span></div>
+              <div style="font-size: 13px; color: #92400e;">Your page is live but <strong>not indexed on search engines or AI</strong>. Upgrade to start getting found.</div>
+            </div>
+            <button class="btn-add" onclick="alert('→ Navigate to pricing page')">Upgrade Now</button>
+          </div>
+        </div>
+
+        <h3 class="mb-12" style="margin-top: 24px;">Available Plans</h3>
+        <p class="text-sm mb-20" style="color: #9ca3af;">Choose the plan that best fits your business needs</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+          <!-- Lite -->
+          <div class="card" style="opacity: .7; border-style: dashed;">
+            <div style="font-size: 13px; color: #9ca3af; margin-bottom: 4px;">CURRENT PLAN</div>
+            <h3>Lite</h3>
+            <p class="text-sm" style="color: #6b7280;">Basic preview</p>
+            <div style="font-size: 32px; font-weight: 800; margin: 12px 0;">$0<span style="font-size: 14px; font-weight: 400; color: #9ca3af;">/mo</span></div>
+            <ul style="list-style: none; font-size: 13px; color: #6b7280;">
+              <li style="padding: 4px 0;"><i class="fa-solid fa-check" style="color:#10b981; margin-right:6px;"></i> Claim your page</li>
+              <li style="padding: 4px 0;"><i class="fa-solid fa-check" style="color:#10b981; margin-right:6px;"></i> Edit business info</li>
+              <li style="padding: 4px 0;"><i class="fa-solid fa-check" style="color:#10b981; margin-right:6px;"></i> Updates once per year</li>
+              <li style="padding: 4px 0; color: #d1d5db;"><i class="fa-solid fa-xmark" style="margin-right:6px;"></i> Not indexed on search engines</li>
+            </ul>
+          </div>
+          <!-- Standard -->
+          <div class="card" style="border: 2px solid #7c3aed; position: relative;">
+            <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #7c3aed; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px;">MOST POPULAR</div>
+            <h3 style="color: #7c3aed;">Standard</h3>
+            <p class="text-sm" style="color: #6b7280;">For growing businesses</p>
+            <div style="font-size: 32px; font-weight: 800; margin: 12px 0; color: #7c3aed;">$29<span style="font-size: 14px; font-weight: 400; color: #9ca3af;">/mo</span></div>
+            <button class="btn-add" style="width: 100%; margin-bottom: 12px;" onclick="alert('→ Navigate to Stripe checkout')">Upgrade to Standard</button>
+            <ul style="list-style: none; font-size: 13px;">
+              <li style="padding: 4px 0; color: #7c3aed; font-weight: 600;">Everything in Lite, plus:</li>
+              <li style="padding: 4px 0;"><i class="fa-solid fa-check" style="color:#7c3aed; margin-right:6px;"></i> Monthly content updates</li>
+              <li style="padding: 4px 0;"><i class="fa-solid fa-check" style="color:#7c3aed; margin-right:6px;"></i> Custom CTA button</li>
+              <li style="padding: 4px 0;"><i class="fa-solid fa-check" style="color:#7c3aed; margin-right:6px;"></i> Awards & certifications</li>
+              <li style="padding: 4px 0;"><i class="fa-solid fa-check" style="color:#7c3aed; margin-right:6px;"></i> SEO & AI search optimization</li>
+              <li style="padding: 4px 0;"><i class="fa-solid fa-check" style="color:#7c3aed; margin-right:6px;"></i> Analytics dashboard</li>
+              <li style="padding: 4px 0;"><i class="fa-solid fa-check" style="color:#7c3aed; margin-right:6px;"></i> Social & web mention alerts</li>
+            </ul>
+          </div>
+          <!-- Advanced -->
+          <div class="card" style="opacity: .6;">
+            <div style="background: #e5e7eb; color: #6b7280; font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px; display: inline-block; margin-bottom: 8px;">COMING SOON</div>
+            <h3>Advanced</h3>
+            <p class="text-sm" style="color: #6b7280;">For power users</p>
+            <div style="font-size: 32px; font-weight: 800; margin: 12px 0; color: #9ca3af;">$79<span style="font-size: 14px; font-weight: 400; color: #9ca3af;">/mo</span></div>
+            <button class="btn-add" style="width: 100%; opacity: .5; cursor: not-allowed; background: #9ca3af;">Coming Soon</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ OWNER PAGE PREVIEW ══════════════════ -->
+<div id="previewView" class="hidden">
+
+  <!-- Owner-only upgrade banner -->
+  <div class="owner-banner">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <span><strong>Only you can see this banner.</strong> Your page is live but <strong>not being indexed</strong> by Google or AI search engines. Upgrade to Standard to start getting discovered.</span>
+    <button class="owner-btn" onclick="alert('→ Navigate to subscription page')">Upgrade to Standard <i class="fa-solid fa-arrow-right" style="margin-left:4px;"></i></button>
+  </div>
+
+  <div class="header" style="top: 0;">
+    <div class="header-left">
+      <div class="header-logo">B</div>
+      <span class="header-title"><strong>Benable</strong></span>
+    </div>
+    <div class="header-right">
+      <button class="back-btn" onclick="showPage('dashboard')"><i class="fa-solid fa-arrow-left" style="font-size:12px;"></i> Back to Dashboard</button>
+    </div>
+  </div>
+
+  <div class="preview-page">
+
+    <!-- SEO Status -->
+    <div class="seo-status-bar">
+      <span class="seo-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+      <span>This page is <strong>not indexed</strong> by search engines or AI. It won't appear in Google, ChatGPT, or other AI search results.</span>
+      <span class="upgrade-link" onclick="alert('→ Navigate to subscription page')">Fix this <i class="fa-solid fa-arrow-right" style="margin-left:2px;"></i></span>
+    </div>
+
+    <!-- Hero -->
+    <div class="preview-hero">
+      <div class="biz-avatar">G</div>
+      <h2>Glow with Gigi</h2>
+      <div class="biz-meta">Spray Tanning &nbsp;&middot;&nbsp; Chicago, IL</div>
+      <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> <span style="color: #374151; font-size: 13px;">5.0 (12 reviews)</span></div>
+    </div>
+
+    <!-- Ghost CTA Area -->
+    <div class="ghost-cta-area">
+      <div class="ghost-btn"><i class="fa-solid fa-phone"></i> Book Now</div>
+      <div class="ghost-label">Your call-to-action button would appear here for visitors</div>
+      <div class="ghost-upgrade" onclick="alert('→ Navigate to subscription page')">Upgrade to Standard to enable <i class="fa-solid fa-arrow-right" style="margin-left:2px;"></i></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="preview-stats">
+      <div class="preview-stat-card">
+        <div class="stat-num">5.0</div>
+        <div class="stat-label">Overall Rating</div>
+      </div>
+      <div class="preview-stat-card">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Reviews this month</div>
+      </div>
+      <div class="preview-stat-card">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Positive Sentiment</div>
+      </div>
+    </div>
+
+    <!-- What Customers Love -->
+    <div class="preview-section">
+      <h3><i class="fa-solid fa-heart" style="color:#f59e0b; margin-right:6px;"></i> What Customers Love Most</h3>
+      <p style="font-size: 14px; color: #4b5563; margin-bottom: 12px;">Customers praise Glow with Gigi for the flawless, natural-looking spray tans and Gigi's warm, professional approach. Reviewers frequently highlight the convenient mobile service and attention to detail.</p>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <div style="background: #faf5ff; border: 1px solid #ede9fe; border-radius: 8px; padding: 10px 14px; font-size: 13px;"><i class="fa-solid fa-palette" style="color:#7c3aed; margin-right:6px;"></i> <strong>Natural-Looking Results</strong> <span style="color: #9ca3af;">— 42%</span></div>
+        <div style="background: #faf5ff; border: 1px solid #ede9fe; border-radius: 8px; padding: 10px 14px; font-size: 13px;"><i class="fa-solid fa-handshake" style="color:#7c3aed; margin-right:6px;"></i> <strong>Professional Service</strong> <span style="color: #9ca3af;">— 33%</span></div>
+        <div style="background: #faf5ff; border: 1px solid #ede9fe; border-radius: 8px; padding: 10px 14px; font-size: 13px;"><i class="fa-solid fa-house" style="color:#7c3aed; margin-right:6px;"></i> <strong>Convenient Mobile Service</strong> <span style="color: #9ca3af;">— 25%</span></div>
+        <div style="background: #faf5ff; border: 1px solid #ede9fe; border-radius: 8px; padding: 10px 14px; font-size: 13px;"><i class="fa-solid fa-sparkles" style="color:#7c3aed; margin-right:6px;"></i> <strong>Attention to Detail</strong> <span style="color: #9ca3af;">— 17%</span></div>
+      </div>
+      <div style="font-size: 11px; color: #9ca3af; margin-top: 8px;"><i class="fa-solid fa-wand-magic-sparkles" style="margin-right:4px;"></i> AI-powered analysis updates monthly on Standard — annually on Lite</div>
+    </div>
+
+    <!-- Reviews -->
+    <div class="preview-section">
+      <h3><i class="fa-solid fa-star" style="color:#f59e0b; margin-right:6px;"></i> Reviews</h3>
+      <div style="border-bottom: 1px solid #f3f4f6; padding: 14px 0;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <div style="width: 32px; height: 32px; background: #e0e7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600;">JM</div>
+          <strong style="font-size: 14px;">Jessica M.</strong>
+          <span style="color: #f59e0b;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span>
+        </div>
+        <p style="font-size: 13px; color: #4b5563;">Gigi was amazing! She came right to my apartment and gave me the most natural-looking tan. Highly recommend!</p>
+      </div>
+      <div style="border-bottom: 1px solid #f3f4f6; padding: 14px 0;">
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+          <div style="width: 32px; height: 32px; background: #fce7f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600;">AT</div>
+          <strong style="font-size: 14px;">Amanda T.</strong>
+          <span style="color: #f59e0b;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span>
+        </div>
+        <p style="font-size: 13px; color: #4b5563;">Best spray tan in Chicago, hands down. Gigi is so professional and the results lasted over a week!</p>
+      </div>
+    </div>
+
+    <!-- Ghost Awards Section -->
+    <div class="preview-section" style="border: 2px dashed #e5e7eb; background: #fafafa; text-align: center; padding: 32px;">
+      <div style="font-size: 28px; margin-bottom: 8px; color: #d1d5db;"><i class="fa-solid fa-trophy"></i></div>
+      <h3>Awards & Certifications</h3>
+      <p style="font-size: 13px; color: #9ca3af; margin-top: 4px;">Showcase your credentials here — available on Standard</p>
+      <button style="margin-top: 12px; background: #7c3aed; color: #fff; border: none; border-radius: 8px; padding: 8px 20px; font-size: 13px; font-weight: 600; cursor: pointer;" onclick="alert('→ Navigate to subscription page')">Upgrade to Add Awards</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // ── Section Navigation ──
+  function showSection(name) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (event && event.currentTarget) {
+      event.currentTarget.classList.add('active');
+    }
+  }
+
+  // ── Page Toggle (Dashboard vs Preview) ──
+  function showPage(page) {
+    if (page === 'preview') {
+      document.getElementById('dashboardView').classList.add('hidden');
+      document.getElementById('previewView').classList.remove('hidden');
+      document.getElementById('upgradeBar').style.display = 'none';
+    } else {
+      document.getElementById('previewView').classList.add('hidden');
+      document.getElementById('dashboardView').classList.remove('hidden');
+      document.getElementById('upgradeBar').style.display = '';
+    }
+    window.scrollTo(0, 0);
+  }
+
+  // ── 24-Hour Nudge Modal ──
+  function openNudge() {
+    document.getElementById('nudgeModal').classList.add('visible');
+  }
+  function closeNudge() {
+    document.getElementById('nudgeModal').classList.remove('visible');
+  }
+  // Close modal on backdrop click
+  document.getElementById('nudgeModal').addEventListener('click', function(e) {
+    if (e.target === this) closeNudge();
+  });
+</script>
+
+</body>
+</html>

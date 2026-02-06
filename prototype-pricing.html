@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benable — Choose Your Plan</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f3f4f6; color: #1e1e2f; line-height: 1.5; }
+
+  /* ── Header ── */
+  .header {
+    background: #fff; border-bottom: 1px solid #e5e7eb;
+    display: flex; align-items: center; justify-content: center;
+    padding: 14px 24px; position: relative;
+  }
+  .header-back {
+    position: absolute; left: 24px; top: 50%; transform: translateY(-50%);
+    font-size: 14px; color: #6b7280; cursor: pointer;
+    display: flex; align-items: center; gap: 6px; text-decoration: none;
+  }
+  .header-back:hover { color: #374151; }
+  .header-logo { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 700; }
+  .header-logo .logo-box {
+    width: 28px; height: 28px; background: #7c3aed; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: 700;
+  }
+
+  /* ── Page Container ── */
+  .page { max-width: 880px; margin: 0 auto; padding: 32px 24px 60px; }
+
+  /* ── Business Card ── */
+  .biz-card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+    padding: 16px 24px; display: flex; align-items: center; gap: 16px;
+    margin-bottom: 40px;
+  }
+  .biz-card .biz-avatar {
+    width: 48px; height: 48px; background: #7c3aed; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 20px; font-weight: 800; flex-shrink: 0;
+  }
+  .biz-card .biz-info { flex: 1; }
+  .biz-card .biz-info h3 { font-size: 16px; font-weight: 700; }
+  .biz-card .biz-info .biz-meta { font-size: 13px; color: #6b7280; display: flex; align-items: center; gap: 6px; }
+  .biz-card .biz-rating {
+    background: #eff6ff; color: #2563eb; font-size: 13px; font-weight: 600;
+    padding: 4px 10px; border-radius: 20px;
+    display: flex; align-items: center; gap: 4px;
+  }
+
+  /* ── Heading ── */
+  .page-heading { text-align: center; margin-bottom: 36px; }
+  .page-heading h1 { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+  .page-heading p { font-size: 15px; color: #6b7280; max-width: 480px; margin: 0 auto; }
+
+  /* ── Plan Cards Grid ── */
+  .plans-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+    margin-bottom: 24px;
+  }
+  .plan-card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 16px;
+    padding: 28px; position: relative; transition: box-shadow .2s;
+  }
+  .plan-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.06); }
+  .plan-card.featured { border: 2px solid #7c3aed; }
+  .plan-card .plan-badge {
+    position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+    background: #7c3aed; color: #fff; font-size: 11px; font-weight: 700;
+    padding: 4px 16px; border-radius: 20px; white-space: nowrap;
+  }
+  .plan-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 2px; }
+  .plan-card.featured h2 { color: #7c3aed; }
+  .plan-card .plan-desc { font-size: 13px; color: #6b7280; margin-bottom: 16px; }
+  .plan-card .plan-price {
+    font-size: 44px; font-weight: 900; line-height: 1; margin-bottom: 4px;
+  }
+  .plan-card.featured .plan-price { color: #7c3aed; }
+  .plan-card .plan-price span { font-size: 16px; font-weight: 400; color: #9ca3af; }
+  .plan-card .plan-billing { font-size: 13px; color: #9ca3af; margin-bottom: 20px; }
+  .plan-card .plan-cta {
+    display: block; width: 100%; text-align: center; padding: 13px;
+    border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer;
+    border: none; transition: all .15s; margin-bottom: 20px;
+  }
+  .plan-card.featured .plan-cta {
+    background: #7c3aed; color: #fff;
+  }
+  .plan-card.featured .plan-cta:hover { background: #6d28d9; }
+  .plan-card:not(.featured) .plan-cta {
+    background: #fff; color: #374151; border: 1.5px solid #d1d5db;
+  }
+  .plan-card:not(.featured) .plan-cta:hover { border-color: #9ca3af; background: #f9fafb; }
+
+  .plan-features { list-style: none; }
+  .plan-features li {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 7px 0; font-size: 14px; color: #374151;
+  }
+  .plan-features li i { margin-top: 3px; font-size: 13px; width: 16px; text-align: center; flex-shrink: 0; }
+  .plan-features li i.fa-check { color: #7c3aed; }
+  .plan-features li.inherit { color: #7c3aed; font-weight: 600; font-size: 13px; }
+  .plan-features li.inherit i { color: #7c3aed; }
+
+  /* Coming soon card */
+  .plan-card.coming-soon { opacity: .55; }
+  .plan-card.coming-soon .plan-cta {
+    background: #e5e7eb; color: #9ca3af; cursor: not-allowed; border: none;
+  }
+
+  /* ── Free Link ── */
+  .free-link-area { text-align: center; margin-top: 8px; }
+  .free-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 14px; color: #9ca3af; cursor: pointer;
+    background: none; border: none; padding: 8px 16px;
+    transition: color .15s;
+  }
+  .free-link:hover { color: #6b7280; }
+  .free-link i { font-size: 12px; }
+
+  /* ── Lite Modal ── */
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  .modal-backdrop.visible { opacity: 1; pointer-events: auto; }
+  .lite-modal {
+    background: #fff; border-radius: 16px; max-width: 460px; width: 90%;
+    overflow: hidden; transform: scale(.95); transition: transform .25s;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  }
+  .modal-backdrop.visible .lite-modal { transform: scale(1); }
+
+  .lite-modal-header {
+    padding: 24px 28px 0; display: flex; align-items: flex-start; justify-content: space-between;
+  }
+  .lite-modal-header h2 { font-size: 20px; font-weight: 700; }
+  .lite-modal-header .lite-price { font-size: 13px; color: #6b7280; margin-top: 2px; }
+  .lite-modal-close {
+    background: none; border: none; color: #9ca3af; font-size: 18px;
+    cursor: pointer; padding: 4px;
+  }
+  .lite-modal-close:hover { color: #6b7280; }
+
+  .lite-modal-body { padding: 20px 28px 24px; }
+  .lite-modal-body .lite-section-label {
+    font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase;
+    letter-spacing: .5px; margin-bottom: 10px;
+  }
+  .lite-modal-body .lite-section-label:not(:first-child) { margin-top: 20px; }
+
+  .lite-features { list-style: none; margin-bottom: 0; }
+  .lite-features li {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 8px 0; font-size: 14px; border-bottom: 1px solid #f3f4f6;
+  }
+  .lite-features li:last-child { border-bottom: none; }
+  .lite-features li i { margin-top: 3px; font-size: 13px; width: 16px; text-align: center; flex-shrink: 0; }
+  .lite-features li.included { color: #374151; }
+  .lite-features li.included i { color: #10b981; }
+  .lite-features li.excluded { color: #c9cdd4; }
+  .lite-features li.excluded i { color: #d1d5db; }
+  .lite-features li.excluded .std-tag {
+    font-size: 10px; background: #f3e8ff; color: #7c3aed;
+    padding: 1px 6px; border-radius: 4px; font-weight: 600; margin-left: auto; flex-shrink: 0;
+  }
+
+  .lite-modal-footer {
+    padding: 0 28px 24px; display: flex; flex-direction: column; gap: 8px;
+  }
+  .lite-start-btn {
+    display: block; width: 100%; text-align: center; padding: 12px;
+    border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;
+    background: #fff; color: #374151; border: 1.5px solid #d1d5db;
+    transition: all .15s;
+  }
+  .lite-start-btn:hover { background: #f9fafb; border-color: #9ca3af; }
+  .lite-upgrade-btn {
+    display: block; width: 100%; text-align: center; padding: 12px;
+    border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer;
+    background: #7c3aed; color: #fff; border: none;
+    transition: all .15s;
+  }
+  .lite-upgrade-btn:hover { background: #6d28d9; }
+  .lite-modal-note {
+    text-align: center; font-size: 12px; color: #b0b5bf; margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <a class="header-back" href="#"><i class="fa-solid fa-arrow-left"></i> Back</a>
+  <div class="header-logo">
+    <div class="logo-box">B</div>
+    Benable
+  </div>
+</div>
+
+<!-- Page -->
+<div class="page">
+
+  <!-- Business Card -->
+  <div class="biz-card">
+    <div class="biz-avatar">G</div>
+    <div class="biz-info">
+      <h3>Glow with Gigi</h3>
+      <div class="biz-meta"><i class="fa-solid fa-briefcase" style="font-size:11px;"></i> Spray Tanning</div>
+    </div>
+    <div class="biz-rating"><i class="fa-solid fa-star" style="color:#f59e0b;"></i> 5.0 (12)</div>
+  </div>
+
+  <!-- Heading -->
+  <div class="page-heading">
+    <h1>Activate your Credibility Page</h1>
+    <p>Your page is built. Choose a plan to control how it works for your business.</p>
+  </div>
+
+  <!-- Plan Cards -->
+  <div class="plans-grid">
+
+    <!-- Standard -->
+    <div class="plan-card featured">
+      <div class="plan-badge">RECOMMENDED</div>
+      <h2>Standard</h2>
+      <div class="plan-desc">For growing businesses</div>
+      <div class="plan-price">$29<span>/mo</span></div>
+      <div class="plan-billing">Billed monthly</div>
+      <button class="plan-cta" onclick="alert('→ Navigate to Stripe checkout')">Subscribe</button>
+      <ul class="plan-features">
+        <li class="inherit"><i class="fa-solid fa-check"></i> Everything in the free plan, plus:</li>
+        <li><i class="fa-solid fa-check"></i> Updates with best new content once per month</li>
+        <li><i class="fa-solid fa-check"></i> Add CTA to your site with your chosen language</li>
+        <li><i class="fa-solid fa-check"></i> Add awards and certifications</li>
+        <li><i class="fa-solid fa-check"></i> Optimized for SEO & AI search results</li>
+        <li><i class="fa-solid fa-check"></i> Analytics to track and measure marketing gains</li>
+        <li><i class="fa-solid fa-check"></i> Alerts with new social & web mentions</li>
+      </ul>
+    </div>
+
+    <!-- Advanced -->
+    <div class="plan-card coming-soon">
+      <div class="plan-badge" style="background: #e5e7eb; color: #6b7280;">COMING SOON</div>
+      <h2>Advanced</h2>
+      <div class="plan-desc">For power users who want it all</div>
+      <div class="plan-price" style="color: #9ca3af;">$79<span>/mo</span></div>
+      <div class="plan-billing">Billed monthly</div>
+      <button class="plan-cta">Coming Soon</button>
+      <ul class="plan-features">
+        <li class="inherit" style="color: #9ca3af;"><i class="fa-solid fa-check" style="color: #9ca3af;"></i> Everything in Standard, plus:</li>
+        <li><i class="fa-solid fa-check" style="color: #c9cdd4;"></i> Updates with new content once per week</li>
+        <li><i class="fa-solid fa-check" style="color: #c9cdd4;"></i> Granular control over what appears on your page</li>
+        <li><i class="fa-solid fa-check" style="color: #c9cdd4;"></i> In-depth sentiment analysis</li>
+        <li><i class="fa-solid fa-check" style="color: #c9cdd4;"></i> Custom recommendations based on weekly data</li>
+        <li><i class="fa-solid fa-check" style="color: #c9cdd4;"></i> Testimonial requests to generate fresh word-of-mouth</li>
+        <li><i class="fa-solid fa-check" style="color: #c9cdd4;"></i> Influencer collaborations for social media posts</li>
+        <li><i class="fa-solid fa-check" style="color: #c9cdd4;"></i> Embeddable widget for your website</li>
+        <li><i class="fa-solid fa-check" style="color: #c9cdd4;"></i> Early access to new features</li>
+        <li><i class="fa-solid fa-check" style="color: #c9cdd4;"></i> Priority support</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Free Link -->
+  <div class="free-link-area">
+    <button class="free-link" onclick="openLiteModal()">Just want to try it free first? <i class="fa-solid fa-arrow-right"></i></button>
+  </div>
+
+</div>
+
+<!-- ══════════════════ LITE MODAL ══════════════════ -->
+<div class="modal-backdrop" id="liteModal">
+  <div class="lite-modal">
+    <div class="lite-modal-header">
+      <div>
+        <h2>Lite Plan</h2>
+        <div class="lite-price">Free forever — $0/mo</div>
+      </div>
+      <button class="lite-modal-close" onclick="closeLiteModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="lite-modal-body">
+      <div class="lite-section-label">What's included</div>
+      <ul class="lite-features">
+        <li class="included"><i class="fa-solid fa-check"></i> Claim your page</li>
+        <li class="included"><i class="fa-solid fa-check"></i> Edit business info</li>
+        <li class="included"><i class="fa-solid fa-check"></i> Updates with best new content once per year</li>
+      </ul>
+
+      <div class="lite-section-label">Not included — available on Standard</div>
+      <ul class="lite-features">
+        <li class="excluded"><i class="fa-solid fa-xmark"></i> Not indexed on search engines or AI <span class="std-tag">STANDARD</span></li>
+        <li class="excluded"><i class="fa-solid fa-xmark"></i> No custom CTA button <span class="std-tag">STANDARD</span></li>
+        <li class="excluded"><i class="fa-solid fa-xmark"></i> No awards & certifications <span class="std-tag">STANDARD</span></li>
+        <li class="excluded"><i class="fa-solid fa-xmark"></i> No SEO & AI search optimization <span class="std-tag">STANDARD</span></li>
+        <li class="excluded"><i class="fa-solid fa-xmark"></i> No analytics or performance tracking <span class="std-tag">STANDARD</span></li>
+        <li class="excluded"><i class="fa-solid fa-xmark"></i> No social & web mention alerts <span class="std-tag">STANDARD</span></li>
+        <li class="excluded"><i class="fa-solid fa-xmark"></i> No monthly content updates <span class="std-tag">STANDARD</span></li>
+      </ul>
+    </div>
+    <div class="lite-modal-footer">
+      <button class="lite-upgrade-btn" onclick="alert('→ Navigate to Stripe checkout for Standard')">Upgrade to Standard — $29/mo</button>
+      <button class="lite-start-btn" onclick="alert('→ Claim page on Lite')">Continue with Lite</button>
+      <div class="lite-modal-note">You can upgrade anytime from your dashboard.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openLiteModal() {
+    document.getElementById('liteModal').classList.add('visible');
+  }
+  function closeLiteModal() {
+    document.getElementById('liteModal').classList.remove('visible');
+  }
+  document.getElementById('liteModal').addEventListener('click', function(e) {
+    if (e.target === this) closeLiteModal();
+  });
+</script>
+
+</body>
+</html>

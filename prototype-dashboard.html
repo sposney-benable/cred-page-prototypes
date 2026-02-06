@@ -79,6 +79,15 @@
   .nav-item.locked-nav:hover { color: #9ca3af; background: #f9fafb; }
   .nav-item.locked-nav .nav-icon { color: #c9cdd4; }
   .nav-item.locked-nav .lock-icon-sm { margin-left: auto; color: #c9cdd4; font-size: 12px; }
+  .nav-dot {
+    width: 8px; height: 8px; background: #ef4444; border-radius: 50%;
+    position: absolute; top: 6px; left: 12px;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .6; transform: scale(1.3); }
+  }
 
   /* Tooltip for locked nav items */
   .nav-item.locked-nav::after {
@@ -164,6 +173,15 @@
   .score-checklist .check { color: #10b981; font-size: 13px; width: 16px; text-align: center; }
   .score-checklist .locked { color: #d1d5db; font-size: 12px; width: 16px; text-align: center; }
   .score-checklist .locked-text { color: #9ca3af; }
+  .score-checklist .checklist-link {
+    cursor: pointer; transition: all .15s; border-radius: 6px; margin: 0 -8px; padding: 6px 8px !important;
+  }
+  .score-checklist .checklist-link:hover { background: #faf5ff; }
+  .score-checklist .checklist-link:hover .locked-text { color: #7c3aed; }
+  .score-checklist .checklist-link:hover .locked i { color: #7c3aed; }
+  .score-checklist .checklist-link .locked i { color: #7c3aed; font-size: 11px; }
+  .checklist-arrow { margin-left: auto; color: #d1d5db; font-size: 11px; transition: color .15s; }
+  .score-checklist .checklist-link:hover .checklist-arrow { color: #7c3aed; }
   .score-cta {
     margin-top: 14px;
     display: inline-flex; align-items: center; gap: 6px;
@@ -318,32 +336,448 @@
   }
 
   /* ── Awards ── */
-  .empty-state {
-    text-align: center; padding: 40px 20px; border: 2px dashed #e5e7eb; border-radius: 12px;
+  .awards-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
   }
-  .empty-state .empty-icon { font-size: 36px; margin-bottom: 8px; color: #d1d5db; }
-  .empty-state h4 { font-size: 16px; margin-bottom: 4px; }
-  .empty-state p { font-size: 13px; color: #9ca3af; margin-bottom: 16px; }
+  .awards-header-left h1 { font-size: 22px; font-weight: 700; margin-bottom: 2px; }
+  .awards-header-left p { font-size: 14px; color: #9ca3af; }
+  .btn-add-award {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #7c3aed; color: #fff; border: none; border-radius: 8px;
+    padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-add-award:hover { background: #6d28d9; }
+
+  .award-list { border: 1px solid #e5e7eb; border-radius: 12px; overflow: visible; background: #fff; }
+  .award-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 20px; border-bottom: 1px solid #f3f4f6;
+    transition: background .1s;
+  }
+  .award-item:last-child { border-bottom: none; }
+  .award-item:hover { background: #faf5ff; }
+  .award-drag { color: #d1d5db; font-size: 14px; cursor: grab; padding: 4px; }
+  .award-icon-box {
+    width: 40px; height: 40px; background: #fef3c7; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .award-info { flex: 1; min-width: 0; }
+  .award-info .award-name { font-size: 15px; font-weight: 600; color: #1e1e2f; }
+  .award-info .award-meta { font-size: 13px; color: #9ca3af; margin-top: 1px; }
+  .award-info .award-desc { font-size: 13px; color: #6b7280; margin-top: 2px; }
+  .award-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  .award-action-btn {
+    width: 34px; height: 34px; border: 1px solid #e5e7eb; border-radius: 8px;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: #6b7280; font-size: 14px; transition: all .15s;
+    position: relative;
+  }
+  .award-action-btn:hover { background: #f3f4f6; color: #374151; border-color: #d1d5db; }
+
+  /* Tooltips for award action buttons */
+  .award-action-btn[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+    background: #1e1e2f; color: #fff; font-size: 12px; font-weight: 500;
+    padding: 8px 14px; border-radius: 8px; white-space: nowrap;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+    margin-bottom: 8px; z-index: 9999;
+  }
+  .award-action-btn[data-tip]::before {
+    content: '';
+    position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+    border: 5px solid transparent; border-top-color: #1e1e2f;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+    margin-bottom: -2px; z-index: 9999;
+  }
+  .award-action-btn[data-tip]:hover::after,
+  .award-action-btn[data-tip]:hover::before { opacity: 1; }
+
   .btn-add {
     background: #7c3aed; color: #fff; border: none; border-radius: 8px;
     padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer;
   }
+
+  /* ── SEO Showcase ── */
+  .seo-showcase {
+    background: linear-gradient(135deg, #f3e8ff 0%, #ede9fe 50%, #e8e0ff 100%);
+    border: 1px solid #ddd6fe; border-radius: 14px;
+    padding: 24px; margin-bottom: 20px;
+  }
+  .seo-showcase-header {
+    display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px;
+  }
+  .seo-showcase-icon {
+    width: 40px; height: 40px; border-radius: 10px; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    color: #4285F4; font-size: 18px; flex-shrink: 0;
+  }
+  .seo-showcase-title { font-size: 15px; font-weight: 700; color: #1e1e2f; }
+  .seo-showcase-sub { font-size: 13px; color: #6b7280; margin-top: 2px; }
+  .seo-showcase-not-ranking {
+    display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 1px solid #fecaca; border-radius: 8px;
+    padding: 10px 14px; margin-bottom: 14px; font-size: 13px; color: #991b1b;
+  }
+  .seo-showcase-not-ranking i { color: #ef4444; }
+  .seo-showcase-results { display: flex; flex-direction: column; gap: 10px; }
+  .seo-showcase-link {
+    display: flex; align-items: center; gap: 12px;
+    background: #fff; border: 1px solid rgba(255,255,255,.6); border-radius: 10px;
+    padding: 14px 16px; text-decoration: none; transition: all .15s; cursor: pointer;
+  }
+  .seo-showcase-link:hover { border-color: #7c3aed; box-shadow: 0 2px 8px rgba(124,58,237,.1); }
+  .seo-showcase-result { flex: 1; }
+  .seo-showcase-url { font-size: 12px; color: #1a73e8; margin-bottom: 3px; }
+  .seo-showcase-result-title { font-size: 15px; font-weight: 600; color: #1a0dab; margin-bottom: 3px; }
+  .seo-showcase-result-desc { font-size: 12px; color: #4d5156; line-height: 1.4; }
+  .seo-showcase-arrow { color: #9ca3af; font-size: 13px; flex-shrink: 0; }
+  .seo-showcase-link:hover .seo-showcase-arrow { color: #7c3aed; }
+  .seo-showcase-footer {
+    margin-top: 16px; font-size: 13px; color: #5b21b6; font-weight: 500;
+    padding-top: 14px; border-top: 1px solid rgba(124,58,237,.15);
+  }
+
+  /* ── SEO/AEO Stats ── */
+  .seo-index-status { display: flex; flex-direction: column; gap: 10px; }
+  .seo-index-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px; border: 1px solid #e5e7eb; border-radius: 10px;
+    background: #fff; font-size: 14px;
+  }
+  .seo-index-item i:first-child { font-size: 20px; color: #6b7280; width: 24px; text-align: center; }
+  .seo-index-item .fa-google { color: #4285f4; }
+  .seo-index-item .fa-robot { color: #7c3aed; }
+  .seo-index-item .fa-bing { color: #00809d; }
+  .seo-index-label { font-size: 13px; color: #6b7280; }
+  .seo-index-value { font-size: 14px; font-weight: 600; color: #1e1e2f; }
+  .seo-index-badge {
+    margin-left: auto; font-size: 12px; font-weight: 600;
+    padding: 4px 10px; border-radius: 20px;
+  }
+  .seo-index-badge.good { background: #dcfce7; color: #16a34a; }
+
+  .seo-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }
+  .seo-table th {
+    text-align: left; padding: 10px 14px; font-size: 12px; font-weight: 600;
+    color: #9ca3af; text-transform: uppercase; letter-spacing: .3px;
+    border-bottom: 2px solid #e5e7eb; background: #f9fafb;
+  }
+  .seo-table td { padding: 12px 14px; border-bottom: 1px solid #f3f4f6; }
+  .seo-table tr:last-child td { border-bottom: none; }
+  .rank-badge {
+    background: #f3e8ff; color: #7c3aed; font-weight: 700; font-size: 13px;
+    padding: 3px 10px; border-radius: 6px;
+  }
+  .rank-up { color: #16a34a; font-weight: 600; font-size: 13px; }
+  .rank-same { color: #9ca3af; font-size: 13px; }
+
+  .seo-chart { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+  .seo-chart-row { display: flex; align-items: center; gap: 10px; }
+  .seo-chart-label { width: 32px; font-size: 13px; color: #9ca3af; text-align: right; }
+  .seo-chart-bar-wrap { flex: 1; height: 24px; background: #f3f4f6; border-radius: 6px; overflow: hidden; }
+  .seo-chart-bar { height: 100%; background: linear-gradient(90deg, #7c3aed, #a855f7); border-radius: 6px; }
+  .seo-chart-val { font-size: 13px; font-weight: 600; color: #374151; width: 48px; }
+
+  /* ── Social Media Stats ── */
+  .social-stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .social-stat-card {
+    background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 10px;
+    padding: 16px; text-align: center;
+  }
+  .social-stat-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #fff; margin: 0 auto 10px;
+  }
+  .ig-bg { background: linear-gradient(135deg, #833AB4, #C13584, #E1306C, #F77737); }
+  .tt-bg { background: #010101; }
+  .fb-bg { background: #1877F2; }
+  .social-stat-num { font-size: 24px; font-weight: 800; color: #1e1e2f; }
+  .social-stat-label { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+  .social-stat-change { font-size: 12px; margin-top: 6px; font-weight: 600; }
+  .social-stat-change.up { color: #16a34a; }
+
+  .social-engagement-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;
+    margin-top: 16px; padding: 16px; background: #faf5ff;
+    border: 1px solid #e9d5ff; border-radius: 10px;
+  }
+  .social-engagement-item { text-align: center; }
+  .social-eng-num { font-size: 20px; font-weight: 800; color: #7c3aed; }
+  .social-eng-label { font-size: 11px; color: #6b7280; margin-top: 2px; }
+
+  /* ── Social Post Cards ── */
+  .social-posts { display: flex; flex-direction: column; gap: 12px; }
+  .social-post-card {
+    border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px;
+    background: #fff; transition: all .15s;
+  }
+  .social-post-card:hover { border-color: #d1d5db; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+  .social-post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .social-post-platform {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 14px;
+  }
+  .social-post-author { font-size: 14px; font-weight: 600; color: #1e1e2f; }
+  .social-post-time { font-size: 12px; color: #9ca3af; }
+  .social-post-body { display: flex; gap: 14px; margin-bottom: 12px; }
+  .social-post-thumb {
+    width: 80px; height: 80px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .social-post-text { font-size: 14px; color: #4b5563; line-height: 1.5; flex: 1; }
+  .social-post-stats {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 13px; color: #6b7280; padding-top: 10px;
+    border-top: 1px solid #f3f4f6;
+  }
+  .social-post-stats i { margin-right: 4px; }
+  .social-post-stats .social-post-reach { margin-left: auto; color: #9ca3af; }
+
+  .btn-see-more {
+    background: #fff; border: 1.5px solid #7c3aed; color: #7c3aed;
+    border-radius: 10px; padding: 12px 28px; font-size: 14px;
+    font-weight: 600; cursor: pointer; transition: all .15s;
+  }
+  .btn-see-more:hover { background: #7c3aed; color: #fff; }
+
+  /* ── Social Mentions List ── */
+  .mentions-header {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
+  }
+  .mentions-header-left h1 { font-size: 22px; font-weight: 700; margin-bottom: 2px; }
+  .mentions-header-left p { font-size: 14px; color: #9ca3af; }
+
+  /* ── Mention Card Grid ── */
+  .mention-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .mention-card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 14px;
+    overflow: visible; transition: all .15s; position: relative;
+  }
+  .mention-card:hover { border-color: #d1d5db; box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+  .mention-card-drag {
+    position: absolute; top: 10px; right: 10px; z-index: 3;
+    width: 28px; height: 28px; background: rgba(255,255,255,.85);
+    backdrop-filter: blur(4px); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: #9ca3af; font-size: 12px; cursor: grab;
+    opacity: 0; transition: opacity .15s;
+  }
+  .mention-card:hover .mention-card-drag { opacity: 1; }
+  .mention-card-drag:hover { color: #6b7280; background: rgba(255,255,255,.95); }
+  .mention-card-thumb {
+    position: relative; width: 100%; aspect-ratio: 9 / 14;
+    border-radius: 13px 13px 0 0; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .mention-card-play {
+    width: 48px; height: 48px; background: rgba(255,255,255,.25);
+    backdrop-filter: blur(4px); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 18px;
+  }
+  .mention-card-platform {
+    position: absolute; top: 10px; left: 10px;
+    width: 28px; height: 28px; border-radius: 8px;
+    background: linear-gradient(135deg, #833AB4, #C13584, #E1306C, #F77737);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 13px;
+  }
+  .mention-card-platform.tt-plat { background: #010101; }
+  .mention-card-views {
+    position: absolute; bottom: 10px; right: 10px;
+    background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
+    color: #fff; font-size: 12px; font-weight: 600;
+    padding: 4px 10px; border-radius: 20px;
+  }
+  .mention-card-views i { margin-right: 4px; }
+  .mention-card-body { padding: 14px 16px 10px; }
+  .mention-card-author { font-size: 14px; font-weight: 700; color: #1e1e2f; margin-bottom: 4px; }
+  .mention-card-text {
+    font-size: 13px; color: #6b7280; line-height: 1.45;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .mention-card-meta { font-size: 12px; color: #9ca3af; margin-top: 6px; }
+  .mention-card-actions {
+    display: flex; align-items: center; justify-content: center; gap: 4px;
+    padding: 0 16px 14px;
+  }
+  .mention-card-btn {
+    flex: 1; height: 34px; border: 1px solid #e5e7eb; border-radius: 8px;
+    background: #fff; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: #6b7280; font-size: 13px; transition: all .15s;
+    position: relative;
+  }
+  .mention-card-btn:hover { background: #f3f4f6; color: #374151; border-color: #d1d5db; }
+  /* Tooltips for mention card buttons */
+  .mention-card-btn[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+    background: #1e1e2f; color: #fff; font-size: 12px; font-weight: 500;
+    padding: 8px 14px; border-radius: 8px; white-space: nowrap;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+    margin-bottom: 8px; z-index: 9999;
+  }
+  .mention-card-btn[data-tip]::before {
+    content: '';
+    position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+    border: 5px solid transparent; border-top-color: #1e1e2f;
+    opacity: 0; pointer-events: none; transition: opacity .2s;
+    margin-bottom: -2px; z-index: 9999;
+  }
+  .mention-card-btn[data-tip]:hover::after,
+  .mention-card-btn[data-tip]:hover::before { opacity: 1; }
+  .goog-bg { background: #4285f4; }
+
+  /* ── Import Modal ── */
+  .import-spinner {
+    width: 40px; height: 40px; border: 4px solid #e5e7eb;
+    border-top-color: #7c3aed; border-radius: 50%;
+    animation: spin 1s linear infinite; margin: 0 auto;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .import-preview {
+    border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; background: #f9fafb;
+  }
+  .import-preview-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .import-preview-body { display: flex; gap: 14px; margin-bottom: 12px; }
+  .import-preview-body .social-post-thumb { width: 64px; height: 64px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .import-preview-text { font-size: 14px; color: #4b5563; line-height: 1.5; flex: 1; font-style: italic; }
+  .import-preview-stats {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 13px; color: #6b7280; padding-top: 10px;
+    border-top: 1px solid #e5e7eb;
+  }
+  .import-preview-stats i { margin-right: 4px; }
+
+  .import-preview-video { display: flex; gap: 16px; margin-top: 12px; }
+  .import-video-thumb {
+    width: 120px; height: 180px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .import-video-duration {
+    position: absolute; bottom: 8px; left: 8px;
+    background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
+    color: #fff; font-size: 11px; font-weight: 600;
+    padding: 3px 8px; border-radius: 12px;
+  }
+  .import-video-duration i { margin-right: 3px; font-size: 10px; }
+  .import-video-details { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+
+  /* ── Analytics Tab Panels ── */
+  .analytics-tab { display: none; }
+  .analytics-tab.active { display: block; }
+  .tab-dot {
+    width: 8px; height: 8px; background: #ef4444; border-radius: 50%;
+    display: inline-block; position: absolute; top: 6px; right: 4px;
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  /* ── CTA Save Button ── */
+  .btn-save-cta {
+    background: #7c3aed; color: #fff; border: none; border-radius: 8px;
+    padding: 10px 24px; font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: background .15s; display: inline-flex; align-items: center;
+  }
+  .btn-save-cta:hover { background: #6d28d9; }
+
+  /* ── Drag-and-Drop States ── */
+  .mention-card.dragging { opacity: .4; transform: scale(.96); }
+  .mention-card.drag-over { border-color: #7c3aed; box-shadow: 0 0 0 2px rgba(124,58,237,.25); }
+
+  /* ── Award Edit Modal ── */
+  .award-modal-content {
+    background: #fff; border-radius: 16px; max-width: 520px; width: 90%;
+    overflow: hidden; transform: scale(.95); transition: transform .25s;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+  }
+  .modal-backdrop.visible .award-modal-content { transform: scale(1); }
+  .award-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 24px 0;
+  }
+  .award-modal-header h2 { font-size: 18px; font-weight: 700; }
+  .award-modal-close {
+    background: none; border: none; color: #9ca3af; font-size: 20px;
+    cursor: pointer; padding: 4px;
+  }
+  .award-modal-close:hover { color: #374151; }
+  .award-modal-body { padding: 20px 24px; }
+  .award-modal-body .form-group { margin-bottom: 16px; }
+  .award-modal-body .form-group label {
+    display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 4px;
+  }
+  .award-modal-body .form-group input,
+  .award-modal-body .form-group textarea {
+    width: 100%; border: 1.5px solid #e5e7eb; border-radius: 8px;
+    padding: 10px 12px; font-size: 14px; font-family: inherit;
+    transition: border-color .15s;
+  }
+  .award-modal-body .form-group input:focus,
+  .award-modal-body .form-group textarea:focus {
+    outline: none; border-color: #7c3aed;
+  }
+  .award-modal-body .form-group textarea { height: 80px; resize: vertical; }
+  .award-modal-footer {
+    display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+    padding: 0 24px 24px;
+  }
+  .award-modal-footer .btn-cancel {
+    background: #fff; border: 1.5px solid #d1d5db; color: #374151;
+    border-radius: 8px; padding: 10px 20px; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all .15s;
+  }
+  .award-modal-footer .btn-cancel:hover { background: #f9fafb; border-color: #9ca3af; }
+  .award-modal-footer .btn-save {
+    background: #7c3aed; color: #fff; border: none;
+    border-radius: 8px; padding: 10px 20px; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: background .15s;
+  }
+  .award-modal-footer .btn-save:hover { background: #6d28d9; }
+
+  /* ── Upgrade Gate Modal (shown when saving) ── */
+  .upgrade-gate-content {
+    background: #fff; border-radius: 16px; max-width: 440px; width: 90%;
+    overflow: hidden; transform: scale(.95); transition: transform .25s;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2); text-align: center; padding: 36px 32px;
+  }
+  .modal-backdrop.visible .upgrade-gate-content { transform: scale(1); }
+  .upgrade-gate-content .gate-icon { font-size: 40px; color: #7c3aed; margin-bottom: 12px; }
+  .upgrade-gate-content h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+  .upgrade-gate-content p { font-size: 14px; color: #6b7280; margin-bottom: 20px; line-height: 1.5; }
+  .upgrade-gate-content .btn-save {
+    display: block; width: 100%; background: #7c3aed; color: #fff; border: none;
+    border-radius: 10px; padding: 14px; font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: background .15s; margin-bottom: 8px;
+  }
+  .upgrade-gate-content .btn-save:hover { background: #6d28d9; }
+  .upgrade-gate-content .gate-dismiss {
+    display: block; width: 100%; background: none; border: none;
+    color: #9ca3af; font-size: 13px; cursor: pointer; padding: 8px;
+  }
+  .upgrade-gate-content .gate-dismiss:hover { color: #6b7280; }
 
   /* ── Page Sections (hidden by default) ── */
   .page-section { display: none; }
   .page-section.active { display: block; }
 
   /* ── Owner Preview Page ── */
-  .owner-banner {
-    background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
-    color: #78350f; text-align: center; padding: 14px 20px;
-    font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 12px;
+  .pv-owner-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 32px; background: #f9fafb; border-bottom: 1px solid #e5e7eb;
+    font-size: 13px;
   }
-  .owner-banner strong { font-weight: 700; }
-  .owner-banner .owner-btn {
-    background: #7c3aed; color: #fff; border: none; border-radius: 6px;
-    padding: 8px 18px; font-weight: 600; font-size: 13px; cursor: pointer;
+  .pv-owner-back {
+    color: #7c3aed; font-weight: 500; text-decoration: none;
+    display: flex; align-items: center;
   }
+  .pv-owner-back:hover { color: #6d28d9; }
+  .pv-owner-msg { color: #9ca3af; font-weight: 400; }
   .preview-page {
     max-width: 900px; margin: 0 auto; padding: 20px;
   }
@@ -446,6 +880,275 @@
     font-size: 12px; color: #b0b5bf;
   }
 
+  /* ══════════════════ Preview Page (pv-) ══════════════════ */
+
+  /* ── Top Nav ── */
+  .pv-topnav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 32px; background: #fff; border-bottom: 1px solid #e5e7eb;
+  }
+  .pv-topnav-left { display: flex; align-items: center; }
+  .pv-logo { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 18px; color: #1e1e2f; }
+  .pv-logo-box {
+    width: 28px; height: 28px; background: #7c3aed; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 800; font-size: 14px;
+  }
+  .pv-topnav-right { display: flex; align-items: center; }
+  .pv-cta-wrapper { display: flex; flex-direction: column; align-items: center; }
+  .pv-btn-cta {
+    background: #7c3aed; color: #fff; border: none; border-radius: 8px;
+    padding: 8px 24px; font-size: 14px; font-weight: 600; cursor: default;
+  }
+  .pv-btn-cta.disabled {
+    background: #d1d5db; color: #fff; opacity: .7; cursor: not-allowed;
+  }
+  .pv-cta-upgrade {
+    font-size: 11px; color: #9ca3af; margin-top: 4px; white-space: nowrap;
+  }
+
+  /* ── Hero Banner ── */
+  .pv-hero {
+    position: relative; width: 100%; height: 220px; overflow: hidden;
+  }
+  .pv-hero-bg {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+  .pv-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,.65) 0%, rgba(0,0,0,.1) 60%, transparent 100%);
+  }
+  .pv-hero-content {
+    position: absolute; bottom: 24px; left: 32px; color: #fff;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .pv-hero-avatar {
+    width: 72px; height: 72px; background: #7c3aed; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 28px; font-weight: 800;
+    border: 3px solid #fff; margin-bottom: 8px;
+  }
+  .pv-hero-name { font-size: 26px; font-weight: 800; text-shadow: 0 1px 4px rgba(0,0,0,.3); }
+  .pv-hero-meta { font-size: 14px; opacity: .9; }
+  .pv-hero-stars { font-size: 14px; color: #fbbf24; display: flex; align-items: center; gap: 4px; }
+  .pv-hero-stars span { color: #fff; font-weight: 600; margin-left: 4px; }
+
+  /* ── Body & Layout ── */
+  .pv-body { max-width: 1100px; margin: 0 auto; padding: 28px 32px; }
+  .pv-layout { display: flex; gap: 32px; }
+
+  /* ── Left Sidebar ── */
+  #previewView .pv-sidebar {
+    width: 220px; min-width: 220px; flex-shrink: 0;
+    position: static; height: auto; border-right: none;
+    padding: 0; background: transparent;
+  }
+  .pv-sidebar-section {
+    padding-bottom: 16px; margin-bottom: 16px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .pv-sidebar-section:last-child { border-bottom: none; margin-bottom: 0; }
+  .pv-sidebar-label {
+    font-size: 11px; font-weight: 700; color: #9ca3af;
+    letter-spacing: .05em; margin-bottom: 8px;
+  }
+  .pv-sidebar-text { font-size: 13px; color: #374151; line-height: 1.6; }
+  .pv-sidebar-link {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: #374151; padding: 6px 0; cursor: pointer;
+    text-decoration: none;
+  }
+  .pv-sidebar-link:hover { color: #7c3aed; }
+  .pv-sidebar-link i:first-child { color: #9ca3af; width: 16px; text-align: center; }
+  .pv-link-arrow { margin-left: auto; color: #d1d5db; font-size: 10px; }
+  .pv-sidebar-row {
+    display: flex; align-items: center; font-size: 13px; color: #374151; padding: 4px 0;
+  }
+  .pv-social-icons { display: flex; gap: 8px; }
+  .pv-social-icon {
+    width: 32px; height: 32px; border-radius: 8px; background: #f3f4f6;
+    display: flex; align-items: center; justify-content: center;
+    color: #374151; font-size: 14px; cursor: pointer; transition: background .15s;
+  }
+  .pv-social-icon:hover { background: #e5e7eb; }
+
+  /* Hours */
+  .pv-hours { display: flex; flex-direction: column; gap: 2px; }
+  .pv-hours-row {
+    display: flex; justify-content: space-between;
+    font-size: 13px; color: #6b7280; padding: 2px 0;
+  }
+  .pv-hours-today { color: #7c3aed; font-weight: 600; }
+
+  /* ── Main Content ── */
+  .pv-main { flex: 1; min-width: 0; }
+
+  /* Tab Bar */
+  .pv-tab-bar {
+    display: flex; gap: 0; border-bottom: 2px solid #e5e7eb; margin-bottom: 24px;
+  }
+  .pv-tab {
+    padding: 10px 24px; font-size: 14px; font-weight: 500; color: #9ca3af;
+    cursor: pointer; border-bottom: 2px solid transparent;
+    margin-bottom: -2px; transition: all .15s;
+  }
+  .pv-tab:hover { color: #374151; }
+  .pv-tab.active { color: #7c3aed; border-bottom-color: #7c3aed; font-weight: 600; }
+
+  /* Stats Row */
+  .pv-stats-row {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 28px;
+  }
+  .pv-stat-card {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+    padding: 20px; text-align: center;
+  }
+  .pv-stat-label {
+    font-size: 11px; font-weight: 600; color: #9ca3af;
+    letter-spacing: .04em; margin-bottom: 8px;
+  }
+  .pv-stat-value { font-size: 28px; font-weight: 800; color: #1e1e2f; }
+  .pv-stat-stars { color: #fbbf24; font-size: 14px; margin-left: 4px; vertical-align: middle; }
+  .pv-stat-sub { font-size: 12px; color: #9ca3af; margin-top: 4px; }
+
+  /* Content Sections */
+  .pv-content-section {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 14px;
+    padding: 24px; margin-bottom: 24px;
+  }
+  .pv-content-section h3 {
+    font-size: 17px; font-weight: 700; color: #1e1e2f; margin-bottom: 14px;
+    display: flex; align-items: center;
+  }
+
+  /* AI Summary */
+  .pv-ai-summary {
+    font-size: 14px; color: #374151; line-height: 1.65; margin-bottom: 10px;
+  }
+  .pv-ai-badge {
+    font-size: 12px; color: #9ca3af; margin-bottom: 18px;
+  }
+  .pv-ai-badge i { color: #a855f7; margin-right: 4px; }
+
+  /* What Customers Love Grid */
+  .pv-love-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .pv-love-card {
+    display: flex; align-items: center; gap: 12px;
+    background: #f9fafb; border: 1px solid #f3f4f6; border-radius: 12px;
+    padding: 14px 16px; cursor: pointer; transition: all .15s;
+  }
+  .pv-love-card:hover { border-color: #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,.04); }
+  .pv-love-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .pv-love-title { font-size: 14px; font-weight: 600; color: #1e1e2f; }
+  .pv-love-pct { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+  .pv-love-arrow { color: #d1d5db; font-size: 11px; margin-left: auto; }
+
+  /* Creator / Influencer Grid */
+  .pv-creators-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;
+  }
+  .pv-creator-card {
+    position: relative; border-radius: 14px; overflow: hidden;
+    background: #f3f4f6; cursor: pointer; transition: transform .15s;
+  }
+  .pv-creator-card:hover { transform: translateY(-2px); }
+  .pv-creator-img {
+    width: 100%; height: 200px; object-fit: cover; display: block;
+  }
+  .pv-creator-platform {
+    position: absolute; top: 10px; right: 10px;
+    width: 28px; height: 28px; border-radius: 50%; color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 13px;
+  }
+  .ig-bg { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+  .tt-bg { background: #000; }
+  .pv-creator-info { padding: 10px 12px 14px; }
+  .pv-creator-name { font-size: 13px; font-weight: 700; color: #1e1e2f; margin-bottom: 4px; }
+  .pv-creator-desc { font-size: 12px; color: #6b7280; line-height: 1.4; }
+
+  /* Show More Button */
+  .pv-show-more {
+    background: #fff; border: 1px solid #e5e7eb; border-radius: 8px;
+    padding: 8px 20px; font-size: 13px; font-weight: 600; color: #6b7280;
+    cursor: pointer; transition: all .15s;
+  }
+  .pv-show-more:hover { border-color: #7c3aed; color: #7c3aed; }
+
+  /* Reviews */
+  .pv-review {
+    padding: 20px 0; border-bottom: 1px solid #f3f4f6;
+  }
+  .pv-review:first-of-type { padding-top: 0; }
+  .pv-review:last-of-type { border-bottom: none; }
+  .pv-review-header {
+    display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px;
+  }
+  .pv-review-avatar {
+    width: 38px; height: 38px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #374151; flex-shrink: 0;
+  }
+  .pv-review-name { font-size: 14px; font-weight: 600; color: #1e1e2f; }
+  .pv-review-stars { color: #fbbf24; font-size: 12px; margin-left: 6px; }
+  .pv-review-date { font-size: 12px; color: #9ca3af; margin-top: 1px; }
+  .pv-review-source {
+    margin-left: auto; width: 28px; height: 28px; border-radius: 50%;
+    background: #f3f4f6; display: flex; align-items: center; justify-content: center;
+    color: #9ca3af; font-size: 13px;
+  }
+  .pv-review-text { font-size: 14px; color: #374151; line-height: 1.65; }
+
+  /* Photos Grid */
+  .pv-photos-grid { display: flex; flex-direction: column; gap: 12px; }
+  .pv-photo-main {
+    width: 100%; height: 260px; object-fit: cover; border-radius: 12px; display: block;
+  }
+  .pv-photos-thumbs { display: flex; gap: 10px; }
+  .pv-photo-thumb {
+    flex: 1; height: 90px; object-fit: cover; border-radius: 10px; cursor: pointer;
+  }
+  .pv-photo-more {
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 13px; font-weight: 600;
+  }
+
+  /* Footer */
+  .pv-footer {
+    text-align: center; padding: 40px 20px; margin-top: 20px;
+    border-top: 1px solid #e5e7eb;
+  }
+
+  /* Awards Owner-Only Section */
+  .pv-awards-owner {
+    border: 1.5px dashed #d1d5db; border-radius: 12px;
+    padding: 14px !important; margin-bottom: 16px;
+    background: #fafafa; position: relative;
+  }
+  .pv-owner-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; color: #9ca3af;
+    background: #f3f4f6; border-radius: 6px;
+    padding: 3px 8px; margin-bottom: 10px;
+  }
+  .pv-owner-badge i { font-size: 10px; }
+  .pv-award-link { font-size: 13px !important; }
+  .pv-award-link i:first-child { color: #d97706 !important; }
+  .pv-award-add-btn {
+    width: 100%;
+    background: #7c3aed; color: #fff; border: none; border-radius: 8px;
+    padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: background .15s;
+  }
+  .pv-award-add-btn:hover { background: #6d28d9; }
+
+  /* ══════════════════ End Preview Page ══════════════════ */
+
   /* ── Utilities ── */
   .hidden { display: none !important; }
   .mb-12 { margin-bottom: 12px; }
@@ -534,17 +1237,17 @@
       <div class="nav-item" onclick="showSection('business')">
         <span class="nav-icon"><i class="fa-regular fa-file-lines"></i></span> Business Page
       </div>
-      <div class="nav-item locked-nav" onclick="showSection('awards')">
+      <div class="nav-item" onclick="showSection('awards'); dismissDot(this);">
         <span class="nav-icon"><i class="fa-solid fa-trophy"></i></span> Awards
-        <i class="fa-solid fa-lock lock-icon-sm"></i>
+        <span class="nav-dot" id="awardsDot"></span>
       </div>
-      <div class="nav-item locked-nav" onclick="showSection('analytics')">
+      <div class="nav-item" onclick="showSection('analytics'); dismissDot(this);">
         <span class="nav-icon"><i class="fa-solid fa-chart-simple"></i></span> Analytics
-        <i class="fa-solid fa-lock lock-icon-sm"></i>
+        <span class="nav-dot" id="analyticsDot"></span>
       </div>
-      <div class="nav-item locked-nav" onclick="showSection('alerts')">
+      <div class="nav-item" onclick="showSection('alerts'); dismissDot(this);">
         <span class="nav-icon"><i class="fa-solid fa-bell"></i></span> Social Mentions
-        <i class="fa-solid fa-lock lock-icon-sm"></i>
+        <span class="nav-dot" id="mentionsDot"></span>
       </div>
       <div class="nav-item" onclick="showSection('subscription')">
         <span class="nav-icon"><i class="fa-regular fa-credit-card"></i></span> Subscription
@@ -589,14 +1292,11 @@
               <li><span class="check"><i class="fa-solid fa-circle-check"></i></span> Business info added</li>
               <li><span class="check"><i class="fa-solid fa-circle-check"></i></span> Reviews imported (12 reviews)</li>
               <li><span class="check"><i class="fa-solid fa-circle-check"></i></span> Creator mentions found (4 posts)</li>
-              <li><span class="locked"><i class="fa-solid fa-lock"></i></span> <span class="locked-text">SEO & AI search indexing</span></li>
-              <li><span class="locked"><i class="fa-solid fa-lock"></i></span> <span class="locked-text">Custom CTA button (Book Now)</span></li>
-              <li><span class="locked"><i class="fa-solid fa-lock"></i></span> <span class="locked-text">Awards & certifications</span></li>
-              <li><span class="locked"><i class="fa-solid fa-lock"></i></span> <span class="locked-text">Monthly content updates</span></li>
-              <li><span class="locked"><i class="fa-solid fa-lock"></i></span> <span class="locked-text">Analytics & performance tracking</span></li>
-              <li><span class="locked"><i class="fa-solid fa-lock"></i></span> <span class="locked-text">Social & web mention alerts</span></li>
+              <li class="checklist-link" onclick="navTo('business')"><span class="locked"><i class="fa-solid fa-arrow-right"></i></span> <span class="locked-text">Add a custom CTA to your website</span> <i class="fa-solid fa-chevron-right checklist-arrow"></i></li>
+              <li class="checklist-link" onclick="navTo('analytics')"><span class="locked"><i class="fa-solid fa-arrow-right"></i></span> <span class="locked-text">Set up SEO & AI search indexing</span> <i class="fa-solid fa-chevron-right checklist-arrow"></i></li>
+              <li class="checklist-link" onclick="navTo('awards')"><span class="locked"><i class="fa-solid fa-arrow-right"></i></span> <span class="locked-text">Add your awards & certifications</span> <i class="fa-solid fa-chevron-right checklist-arrow"></i></li>
+              <li class="checklist-link" onclick="navTo('alerts')"><span class="locked"><i class="fa-solid fa-arrow-right"></i></span> <span class="locked-text">Set up social mentions scanning</span> <i class="fa-solid fa-chevron-right checklist-arrow"></i></li>
             </ul>
-            <button class="score-cta" onclick="window.location.href='prototype-pricing.html'">Unlock All Features <i class="fa-solid fa-arrow-right" style="margin-left:4px;"></i></button>
           </div>
         </div>
 
@@ -719,15 +1419,6 @@
         <h1 class="page-title">Business Page</h1>
         <p class="page-subtitle">Edit your public business profile</p>
 
-        <!-- Contextual Banner: CTA -->
-        <div class="ctx-banner">
-          <span class="ctx-icon"><i class="fa-solid fa-rocket"></i></span>
-          <div class="ctx-text">
-            <strong>Your page has no call-to-action button.</strong> Visitors can see your reviews but can't book or contact you. Add a "Book Now" button with Standard.
-          </div>
-          <button class="ctx-btn" onclick="window.location.href='prototype-pricing.html'">Add CTA <i class="fa-solid fa-arrow-right" style="margin-left:4px;"></i></button>
-        </div>
-
         <div class="tab-bar">
           <div class="tab active">Basic Info</div>
           <div class="tab">Contact</div>
@@ -763,132 +1454,437 @@
           </div>
         </div>
 
-        <!-- CTA Editor Teaser -->
-        <div class="cta-editor-teaser">
-          <h4><i class="fa-solid fa-bullhorn" style="margin-right:6px;"></i> Call-to-Action Button</h4>
-          <p>Add a prominent button to your page so visitors can book, buy, or contact you instantly.</p>
-          <div class="mock-cta">Book Now</div>
-          <br />
-          <p style="font-size: 12px; color: #9ca3af;">Preview of how your CTA would appear on your page</p>
-          <button class="gated-btn" onclick="window.location.href='prototype-pricing.html'">Upgrade to Enable Your CTA</button>
+        <!-- CTA Editor -->
+        <div class="card">
+          <h3>Call-to-Action Button</h3>
+          <div class="card-sub">Your main action button text</div>
+          <div class="form-group" style="margin-top: 16px;">
+            <label>Button Text</label>
+            <input type="text" value="" placeholder="e.g. Get Quote, Book Now, Contact Us..." id="ctaButtonText" style="border-width: 1.5px;" />
+            <div style="font-size: 12px; color: #9ca3af; margin-top: 4px;">The text shown on your main CTA button</div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: flex-end; margin-top: 8px;">
+            <button class="btn-save-cta" onclick="saveCTA()"><i class="fa-solid fa-check" style="margin-right: 6px;"></i>Save</button>
+          </div>
         </div>
       </div>
 
       <!-- ════════ AWARDS ════════ -->
       <div class="page-section" id="section-awards">
-        <h1 class="page-title">Awards & Certifications</h1>
-        <p class="page-subtitle">Manage your business awards and certifications</p>
+        <div class="awards-header">
+          <div class="awards-header-left">
+            <h1>Awards & Certifications</h1>
+            <p>Manage your business awards and certifications</p>
+          </div>
+          <button class="btn-add-award" onclick="openAwardModal()"><i class="fa-solid fa-plus"></i> Add Award</button>
+        </div>
 
         <!-- Contextual Banner -->
         <div class="ctx-banner">
-          <span class="ctx-icon"><i class="fa-solid fa-trophy"></i></span>
+          <span class="ctx-icon"><i class="fa-solid fa-eye-slash"></i></span>
           <div class="ctx-text">
-            <strong>Awards & Certifications are a Standard feature.</strong> Showcase your credentials to build trust with potential customers.
+            We found <strong>2 awards</strong> for your business. They're hidden from your page right now. <strong>Upgrade to Standard</strong> to display them and add more.
           </div>
-          <button class="ctx-btn" onclick="window.location.href='prototype-pricing.html'">Upgrade to Add Awards <i class="fa-solid fa-arrow-right" style="margin-left:4px;"></i></button>
+          <button class="ctx-btn" onclick="window.location.href='prototype-pricing.html'">Show on Page <i class="fa-solid fa-arrow-right" style="margin-left:4px;"></i></button>
         </div>
 
-        <div class="card">
-          <div class="empty-state">
-            <div class="empty-icon"><i class="fa-solid fa-trophy"></i></div>
-            <h4>Showcase your achievements</h4>
-            <p>Awards and certifications appear prominently on your Credibility Page, proving to visitors that your business is recognized and trusted.</p>
-            <button class="btn-add" onclick="window.location.href='prototype-pricing.html'">Upgrade to Add Awards</button>
+        <div class="award-list">
+          <div class="award-item">
+            <div class="award-drag"><i class="fa-solid fa-grip-vertical"></i></div>
+            <div class="award-icon-box"><i class="fa-solid fa-trophy" style="color: #d97706;"></i></div>
+            <div class="award-info">
+              <div class="award-name">Best Spray Tan Artist 2025</div>
+              <div class="award-meta">Chicago Beauty Awards &middot; 2025</div>
+              <div class="award-desc">Recognized as the best spray tan artist in the greater Chicago area</div>
+            </div>
+            <div class="award-actions">
+              <button class="award-action-btn" data-tip="Upgrade to Standard to show on your page" onclick="openUpgradeGate()"><i class="fa-solid fa-eye-slash"></i></button>
+              <button class="award-action-btn" data-tip="Upgrade to Standard to edit" onclick="openAwardModal('edit')"><i class="fa-solid fa-pen"></i></button>
+            </div>
+          </div>
+          <div class="award-item">
+            <div class="award-drag"><i class="fa-solid fa-grip-vertical"></i></div>
+            <div class="award-icon-box"><i class="fa-solid fa-trophy" style="color: #d97706;"></i></div>
+            <div class="award-info">
+              <div class="award-name">Top Mobile Beauty Service</div>
+              <div class="award-meta">Illinois Small Business Network &middot; 2024</div>
+              <div class="award-desc">Named a top mobile beauty service provider in Illinois</div>
+            </div>
+            <div class="award-actions">
+              <button class="award-action-btn" data-tip="Upgrade to Standard to show on your page" onclick="openUpgradeGate()"><i class="fa-solid fa-eye-slash"></i></button>
+              <button class="award-action-btn" data-tip="Upgrade to Standard to edit" onclick="openAwardModal('edit')"><i class="fa-solid fa-pen"></i></button>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- ════════ ANALYTICS (Full Gated) ════════ -->
+      <!-- ════════ ANALYTICS ════════ -->
       <div class="page-section" id="section-analytics">
         <h1 class="page-title">Analytics</h1>
         <p class="page-subtitle">Track and measure your Credibility Page performance</p>
 
+        <div class="tab-bar">
+          <div class="tab active" onclick="showAnalyticsTab('social', this)">Social Media Presence</div>
+          <div class="tab" onclick="showAnalyticsTab('seo', this)" style="position: relative;">SEO & AEO Stats <span class="tab-dot"></span></div>
+        </div>
+
+        <!-- ── Tab 1: Social Media Presence ── -->
+        <div class="analytics-tab active" id="analyticsTab-social">
+        <div class="card">
+          <h3><i class="fa-solid fa-share-nodes" style="color: #7c3aed; margin-right: 8px;"></i>Social Media Presence</h3>
+          <div class="card-sub">Your social media activity and engagement</div>
+
+          <!-- Social Stats Row -->
+          <div class="social-stats-row">
+            <div class="social-stat-card">
+              <div class="social-stat-icon ig-bg"><i class="fa-brands fa-instagram"></i></div>
+              <div class="social-stat-num">2,847</div>
+              <div class="social-stat-label">Instagram Followers</div>
+              <div class="social-stat-change up"><i class="fa-solid fa-arrow-up"></i> +124 this month</div>
+            </div>
+            <div class="social-stat-card">
+              <div class="social-stat-icon tt-bg"><i class="fa-brands fa-tiktok"></i></div>
+              <div class="social-stat-num">1,203</div>
+              <div class="social-stat-label">TikTok Followers</div>
+              <div class="social-stat-change up"><i class="fa-solid fa-arrow-up"></i> +89 this month</div>
+            </div>
+            <div class="social-stat-card">
+              <div class="social-stat-icon fb-bg"><i class="fa-brands fa-facebook-f"></i></div>
+              <div class="social-stat-num">634</div>
+              <div class="social-stat-label">Facebook Followers</div>
+              <div class="social-stat-change up"><i class="fa-solid fa-arrow-up"></i> +18 this month</div>
+            </div>
+          </div>
+
+          <!-- Engagement Overview -->
+          <div class="social-engagement-row">
+            <div class="social-engagement-item">
+              <div class="social-eng-num">4.8%</div>
+              <div class="social-eng-label">Avg Engagement Rate</div>
+            </div>
+            <div class="social-engagement-item">
+              <div class="social-eng-num">3.2K</div>
+              <div class="social-eng-label">Avg Reach per Post</div>
+            </div>
+            <div class="social-engagement-item">
+              <div class="social-eng-num">47</div>
+              <div class="social-eng-label">Posts This Month</div>
+            </div>
+            <div class="social-engagement-item">
+              <div class="social-eng-num">12</div>
+              <div class="social-eng-label">Creator Mentions</div>
+            </div>
+          </div>
+
+          <!-- Recent Posts -->
+          <h4 style="font-size: 15px; font-weight: 600; margin-top: 24px; margin-bottom: 14px;">Recent Posts</h4>
+          <div class="social-posts">
+            <div class="social-post-card">
+              <div class="social-post-header">
+                <div class="social-post-platform ig-bg"><i class="fa-brands fa-instagram"></i></div>
+                <div>
+                  <div class="social-post-author">@glowwithgigi</div>
+                  <div class="social-post-time">2 days ago</div>
+                </div>
+              </div>
+              <div class="social-post-body">
+                <div class="social-post-thumb" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);"><i class="fa-solid fa-image" style="font-size: 24px; color: rgba(255,255,255,.6);"></i></div>
+                <div class="social-post-text">Sunday spray session glow-up! My client wanted a natural bronze for her vacation and we nailed it. Swipe for the before & after...</div>
+              </div>
+              <div class="social-post-stats">
+                <span><i class="fa-solid fa-heart"></i> 187</span>
+                <span><i class="fa-solid fa-comment"></i> 24</span>
+                <span><i class="fa-solid fa-share"></i> 8</span>
+                <span class="social-post-reach"><i class="fa-solid fa-eye"></i> 3.4K reach</span>
+              </div>
+            </div>
+
+            <div class="social-post-card">
+              <div class="social-post-header">
+                <div class="social-post-platform tt-bg"><i class="fa-brands fa-tiktok"></i></div>
+                <div>
+                  <div class="social-post-author">@glowwithgigi</div>
+                  <div class="social-post-time">5 days ago</div>
+                </div>
+              </div>
+              <div class="social-post-body">
+                <div class="social-post-thumb" style="background: linear-gradient(135deg, #a855f7, #7c3aed);"><i class="fa-solid fa-play" style="font-size: 24px; color: rgba(255,255,255,.6);"></i></div>
+                <div class="social-post-text">POV: You book a mobile spray tan and don't have to leave your apartment. This is your sign to treat yourself...</div>
+              </div>
+              <div class="social-post-stats">
+                <span><i class="fa-solid fa-heart"></i> 542</span>
+                <span><i class="fa-solid fa-comment"></i> 38</span>
+                <span><i class="fa-solid fa-share"></i> 67</span>
+                <span class="social-post-reach"><i class="fa-solid fa-eye"></i> 12.1K views</span>
+              </div>
+            </div>
+
+            <div class="social-post-card">
+              <div class="social-post-header">
+                <div class="social-post-platform ig-bg"><i class="fa-brands fa-instagram"></i></div>
+                <div>
+                  <div class="social-post-author">@glowwithgigi</div>
+                  <div class="social-post-time">1 week ago</div>
+                </div>
+              </div>
+              <div class="social-post-body">
+                <div class="social-post-thumb" style="background: linear-gradient(135deg, #ec4899, #f43f5e);"><i class="fa-solid fa-image" style="font-size: 24px; color: rgba(255,255,255,.6);"></i></div>
+                <div class="social-post-text">Behind the scenes at today's bridal party spray tan session. 6 ladies all glowing for the big day tomorrow!</div>
+              </div>
+              <div class="social-post-stats">
+                <span><i class="fa-solid fa-heart"></i> 312</span>
+                <span><i class="fa-solid fa-comment"></i> 41</span>
+                <span><i class="fa-solid fa-share"></i> 15</span>
+                <span class="social-post-reach"><i class="fa-solid fa-eye"></i> 5.8K reach</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- See More Button -->
+          <div style="text-align: center; margin-top: 20px;">
+            <button class="btn-see-more" onclick="openAnalyticsGate()">
+              <i class="fa-solid fa-chart-bar" style="margin-right: 6px;"></i> See More Analytics & Insights
+            </button>
+          </div>
+        </div>
+
+        </div><!-- /analyticsTab-social -->
+
+        <!-- ── Tab 2: SEO & AEO Stats ── -->
+        <div class="analytics-tab" id="analyticsTab-seo">
+
+        <!-- Real-world SEO showcase -->
+        <div class="seo-showcase">
+          <div class="seo-showcase-header">
+            <div class="seo-showcase-icon"><i class="fa-brands fa-google"></i></div>
+            <div>
+              <div class="seo-showcase-title">These businesses rank on Google with Benable</div>
+              <div class="seo-showcase-sub">Real search results — click to see for yourself</div>
+            </div>
+          </div>
+          <div class="seo-showcase-not-ranking">
+            <i class="fa-solid fa-circle-xmark"></i>
+            <span><strong>Your page isn't ranking yet.</strong> Upgrade to Standard to get indexed by Google and AI search engines.</span>
+          </div>
+          <div class="seo-showcase-results">
+            <a href="https://www.google.com/search?q=7th29+barbershop" target="_blank" class="seo-showcase-link">
+              <div class="seo-showcase-result">
+                <div class="seo-showcase-url"><i class="fa-brands fa-google" style="color:#4285F4; margin-right:6px;"></i> google.com <span style="color:#9ca3af;"> &rsaquo; 7th29 barbershop</span></div>
+                <div class="seo-showcase-result-title">7th29 Barbershop — Benable</div>
+                <div class="seo-showcase-result-desc">7th29 Barbershop is a barbershop in Pittsburgh, PA. Featured by creators & influencers. Rated 5.0 stars...</div>
+              </div>
+              <div class="seo-showcase-arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+            </a>
+            <a href="https://www.google.com/search?q=nadine+photography+pittsburgh" target="_blank" class="seo-showcase-link">
+              <div class="seo-showcase-result">
+                <div class="seo-showcase-url"><i class="fa-brands fa-google" style="color:#4285F4; margin-right:6px;"></i> google.com <span style="color:#9ca3af;"> &rsaquo; nadine photography pittsburgh</span></div>
+                <div class="seo-showcase-result-title">Nadine Photography — Benable</div>
+                <div class="seo-showcase-result-desc">Nadine Photography is a photographer based in Pittsburgh, PA. Rated 5.0 stars from 148 reviews...</div>
+              </div>
+              <div class="seo-showcase-arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+            </a>
+            <a href="https://www.google.com/search?q=berna+construction+pittsburgh" target="_blank" class="seo-showcase-link">
+              <div class="seo-showcase-result">
+                <div class="seo-showcase-url"><i class="fa-brands fa-google" style="color:#4285F4; margin-right:6px;"></i> google.com <span style="color:#9ca3af;"> &rsaquo; berna construction pittsburgh</span></div>
+                <div class="seo-showcase-result-title">Berna Construction — Benable</div>
+                <div class="seo-showcase-result-desc">Berna Construction is a home improvement business in Pittsburgh, PA. Featured by creators & influencers...</div>
+              </div>
+              <div class="seo-showcase-arrow"><i class="fa-solid fa-arrow-up-right-from-square"></i></div>
+            </a>
+          </div>
+          <div class="seo-showcase-footer">
+            <a href="prototype-pricing.html" style="color:#5b21b6; text-decoration:none; font-weight:600;">
+              <i class="fa-solid fa-sparkles" style="margin-right:5px;"></i>
+              Upgrade to Standard to get your page ranking like these businesses <i class="fa-solid fa-arrow-right" style="margin-left:4px; font-size:12px;"></i>
+            </a>
+          </div>
+        </div>
+
         <div class="card gated-section" style="min-height: 400px;">
           <div class="gated-overlay">
-            <div class="lock-icon"><i class="fa-solid fa-chart-line"></i></div>
-            <h4>Unlock Page Analytics</h4>
-            <p>See exactly how many people find your page, where they come from, and how your SEO and AI visibility is improving over time.</p>
+            <div class="lock-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+            <h4>Unlock SEO & AEO Stats</h4>
+            <p>See how your page ranks on Google and AI search engines, track keyword performance, and monitor your visibility over time.</p>
             <button class="gated-btn" onclick="window.location.href='prototype-pricing.html'">Upgrade to Standard</button>
           </div>
           <div class="gated-content">
-            <h3>Performance Overview</h3>
-            <div class="card-sub">Last 30 days</div>
-            <div class="fake-stats">
-              <div class="fake-stat"><div class="num">847</div><div class="label">Page Views</div></div>
-              <div class="fake-stat"><div class="num">124</div><div class="label">Unique Visitors</div></div>
-              <div class="fake-stat"><div class="num">23</div><div class="label">CTA Clicks</div></div>
+            <!-- Index Status -->
+            <div class="seo-index-status">
+              <div class="seo-index-item indexed">
+                <i class="fa-brands fa-google"></i>
+                <div>
+                  <div class="seo-index-label">Google Search</div>
+                  <div class="seo-index-value">Indexed — 14 pages</div>
+                </div>
+                <span class="seo-index-badge good"><i class="fa-solid fa-circle-check"></i> Live</span>
+              </div>
+              <div class="seo-index-item indexed">
+                <i class="fa-solid fa-robot"></i>
+                <div>
+                  <div class="seo-index-label">AI Search (ChatGPT, Perplexity)</div>
+                  <div class="seo-index-value">Referenced in 23 AI responses this month</div>
+                </div>
+                <span class="seo-index-badge good"><i class="fa-solid fa-circle-check"></i> Active</span>
+              </div>
+              <div class="seo-index-item indexed">
+                <i class="fa-brands fa-bing"></i>
+                <div>
+                  <div class="seo-index-label">Bing Search</div>
+                  <div class="seo-index-value">Indexed — 11 pages</div>
+                </div>
+                <span class="seo-index-badge good"><i class="fa-solid fa-circle-check"></i> Live</span>
+              </div>
             </div>
-            <div class="fake-chart">
-              <div class="bar" style="height:40%"></div>
-              <div class="bar" style="height:55%"></div>
-              <div class="bar" style="height:35%"></div>
-              <div class="bar" style="height:70%"></div>
-              <div class="bar" style="height:85%"></div>
-              <div class="bar" style="height:65%"></div>
-              <div class="bar" style="height:90%"></div>
-              <div class="bar" style="height:75%"></div>
-              <div class="bar" style="height:60%"></div>
-              <div class="bar" style="height:95%"></div>
-              <div class="bar" style="height:80%"></div>
-              <div class="bar" style="height:70%"></div>
-            </div>
-            <div style="margin-top: 20px;">
-              <h3>Traffic Sources</h3>
-              <div class="card-sub">Where your visitors come from</div>
-              <div style="height: 100px; background: linear-gradient(90deg, #7c3aed 45%, #a855f7 25%, #c4b5fd 15%, #e9d5ff 15%); border-radius: 8px; margin-top: 12px;"></div>
+
+            <!-- Keyword Rankings Table -->
+            <h3 style="margin-top: 24px;">Keyword Rankings</h3>
+            <div class="card-sub">How your page ranks for relevant search terms</div>
+            <table class="seo-table">
+              <thead>
+                <tr>
+                  <th>Keyword</th>
+                  <th>Position</th>
+                  <th>Change</th>
+                  <th>Search Volume</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>"spray tan chicago"</td>
+                  <td><span class="rank-badge">#3</span></td>
+                  <td class="rank-up"><i class="fa-solid fa-arrow-up"></i> +2</td>
+                  <td>2,400/mo</td>
+                </tr>
+                <tr>
+                  <td>"best spray tan near me"</td>
+                  <td><span class="rank-badge">#7</span></td>
+                  <td class="rank-up"><i class="fa-solid fa-arrow-up"></i> +5</td>
+                  <td>8,100/mo</td>
+                </tr>
+                <tr>
+                  <td>"mobile spray tan chicago"</td>
+                  <td><span class="rank-badge">#1</span></td>
+                  <td class="rank-same">—</td>
+                  <td>720/mo</td>
+                </tr>
+                <tr>
+                  <td>"airbrush tan chicago il"</td>
+                  <td><span class="rank-badge">#4</span></td>
+                  <td class="rank-up"><i class="fa-solid fa-arrow-up"></i> +1</td>
+                  <td>590/mo</td>
+                </tr>
+                <tr>
+                  <td>"glow with gigi reviews"</td>
+                  <td><span class="rank-badge">#1</span></td>
+                  <td class="rank-same">—</td>
+                  <td>140/mo</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Visibility Over Time -->
+            <h3 style="margin-top: 24px;">Search Visibility Over Time</h3>
+            <div class="card-sub">Impressions from Google & AI search — last 6 months</div>
+            <div class="seo-chart">
+              <div class="seo-chart-row">
+                <span class="seo-chart-label">Sep</span>
+                <div class="seo-chart-bar-wrap"><div class="seo-chart-bar" style="width: 15%;"></div></div>
+                <span class="seo-chart-val">120</span>
+              </div>
+              <div class="seo-chart-row">
+                <span class="seo-chart-label">Oct</span>
+                <div class="seo-chart-bar-wrap"><div class="seo-chart-bar" style="width: 28%;"></div></div>
+                <span class="seo-chart-val">340</span>
+              </div>
+              <div class="seo-chart-row">
+                <span class="seo-chart-label">Nov</span>
+                <div class="seo-chart-bar-wrap"><div class="seo-chart-bar" style="width: 42%;"></div></div>
+                <span class="seo-chart-val">580</span>
+              </div>
+              <div class="seo-chart-row">
+                <span class="seo-chart-label">Dec</span>
+                <div class="seo-chart-bar-wrap"><div class="seo-chart-bar" style="width: 55%;"></div></div>
+                <span class="seo-chart-val">720</span>
+              </div>
+              <div class="seo-chart-row">
+                <span class="seo-chart-label">Jan</span>
+                <div class="seo-chart-bar-wrap"><div class="seo-chart-bar" style="width: 78%;"></div></div>
+                <span class="seo-chart-val">1,040</span>
+              </div>
+              <div class="seo-chart-row">
+                <span class="seo-chart-label">Feb</span>
+                <div class="seo-chart-bar-wrap"><div class="seo-chart-bar" style="width: 92%;"></div></div>
+                <span class="seo-chart-val">1,280</span>
+              </div>
             </div>
           </div>
         </div>
+        </div><!-- /analyticsTab-seo -->
       </div>
 
-      <!-- ════════ ALERTS (Full Gated) ════════ -->
+      <!-- ════════ SOCIAL MENTIONS ════════ -->
       <div class="page-section" id="section-alerts">
-        <h1 class="page-title">Social Mentions</h1>
-        <p class="page-subtitle">Stay on top of new reviews, social mentions, and web activity</p>
+        <div class="mentions-header">
+          <div class="mentions-header-left">
+            <h1>Social Mentions</h1>
+            <p>Manage mentions of your business across the web</p>
+          </div>
+          <button class="btn-add-award" onclick="openImportModal()"><i class="fa-solid fa-file-import"></i> Import Mention</button>
+        </div>
 
-        <div class="card gated-section" style="min-height: 350px;">
-          <div class="gated-overlay">
-            <div class="lock-icon"><i class="fa-solid fa-bell"></i></div>
-            <h4>Unlock Social Mentions</h4>
-            <p>Get notified when customers review your business, creators mention you on social media, or your business appears on the web.</p>
-            <button class="gated-btn" onclick="window.location.href='prototype-pricing.html'">Upgrade to Standard</button>
-          </div>
-          <div class="gated-content">
-            <h3>Recent Activity</h3>
-            <div class="card-sub">Mentions and reviews from across the web</div>
-            <div class="alert-item">
-              <div class="alert-icon ig"><i class="fa-brands fa-instagram"></i></div>
-              <div class="alert-body">
-                <div class="alert-title">@beautybylaura mentioned you on Instagram</div>
-                <div class="alert-desc">Tagged your business in a Story about spray tanning tips</div>
-              </div>
-              <div class="alert-time">2 hours ago</div>
+        <div class="mention-grid">
+          <!-- Mention 1: Instagram Reel -->
+          <div class="mention-card">
+            <div class="mention-card-drag"><i class="fa-solid fa-grip-vertical"></i></div>
+            <div class="mention-card-thumb" style="background: linear-gradient(160deg, #f9a825 0%, #e65100 100%);">
+              <div class="mention-card-play"><i class="fa-solid fa-play"></i></div>
+              <div class="mention-card-platform"><i class="fa-brands fa-instagram"></i></div>
+              <div class="mention-card-views"><i class="fa-solid fa-eye"></i> 8.3K</div>
             </div>
-            <div class="alert-item">
-              <div class="alert-icon goog"><i class="fa-brands fa-google"></i></div>
-              <div class="alert-body">
-                <div class="alert-title">New 5-star Google Review from Sarah M.</div>
-                <div class="alert-desc">"Best spray tan I've ever had! So natural looking."</div>
-              </div>
-              <div class="alert-time">1 day ago</div>
-            </div>
-            <div class="alert-item">
-              <div class="alert-icon tt"><i class="fa-brands fa-tiktok"></i></div>
-              <div class="alert-body">
-                <div class="alert-title">@chicagoglowups mentioned you on TikTok</div>
-                <div class="alert-desc">Video with 4.2K views featuring your spray tan service</div>
-              </div>
-              <div class="alert-time">3 days ago</div>
-            </div>
-            <div class="alert-item">
-              <div class="alert-icon reddit"><i class="fa-brands fa-reddit-alien"></i></div>
-              <div class="alert-body">
-                <div class="alert-title">Reddit mention in r/Chicago</div>
-                <div class="alert-desc">Thread: "Best spray tan in Chicago?" — your business was recommended</div>
-              </div>
-              <div class="alert-time">5 days ago</div>
+            <div class="mention-card-body">
+              <div class="mention-card-author">@beautybylaura</div>
+              <div class="mention-card-text">"Obsessed with my tan from @glowwithgigi — this is the most natural spray tan I've ever had!"</div>
+              <div class="mention-card-meta">Instagram Reel &middot; 2 hours ago</div>
             </div>
           </div>
+
+          <!-- Mention 2: TikTok -->
+          <div class="mention-card">
+            <div class="mention-card-drag"><i class="fa-solid fa-grip-vertical"></i></div>
+            <div class="mention-card-thumb" style="background: linear-gradient(160deg, #7c3aed 0%, #4f46e5 100%);">
+              <div class="mention-card-play"><i class="fa-solid fa-play"></i></div>
+              <div class="mention-card-platform tt-plat"><i class="fa-brands fa-tiktok"></i></div>
+              <div class="mention-card-views"><i class="fa-solid fa-eye"></i> 4.2K</div>
+            </div>
+            <div class="mention-card-body">
+              <div class="mention-card-author">@chicagoglowups</div>
+              <div class="mention-card-text">"Best mobile spray tan in Chicago — Glow with Gigi came to my apartment and the results were insane"</div>
+              <div class="mention-card-meta">TikTok &middot; 3 days ago</div>
+            </div>
+          </div>
+
+          <!-- Mention 3: Instagram Post -->
+          <div class="mention-card">
+            <div class="mention-card-drag"><i class="fa-solid fa-grip-vertical"></i></div>
+            <div class="mention-card-thumb" style="background: linear-gradient(160deg, #ec4899 0%, #be185d 100%);">
+              <div class="mention-card-play"><i class="fa-solid fa-images"></i></div>
+              <div class="mention-card-platform"><i class="fa-brands fa-instagram"></i></div>
+              <div class="mention-card-views"><i class="fa-solid fa-heart"></i> 312</div>
+            </div>
+            <div class="mention-card-body">
+              <div class="mention-card-author">@chicagobrides</div>
+              <div class="mention-card-text">"Bridal party glow courtesy of @glowwithgigi — 6 ladies all bronzed and ready for the big day!"</div>
+              <div class="mention-card-meta">Instagram Post &middot; 1 week ago</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Load More -->
+        <div style="text-align: center; margin-top: 20px;">
+          <button class="btn-see-more" onclick="openMentionsGate()">
+            <i class="fa-solid fa-plus" style="margin-right: 6px;"></i> Load More Mentions
+          </button>
+          <div style="font-size: 12px; color: #9ca3af; margin-top: 6px;">7 more mentions found</div>
         </div>
       </div>
 
@@ -960,105 +1956,423 @@
 <!-- ══════════════════ OWNER PAGE PREVIEW ══════════════════ -->
 <div id="previewView" class="hidden">
 
-  <!-- Owner-only upgrade banner -->
-  <div class="owner-banner">
-    <i class="fa-solid fa-triangle-exclamation"></i>
-    <span><strong>Only you can see this banner.</strong> Your page is live but <strong>not being indexed</strong> by Google or AI search engines. Upgrade to Standard to start getting discovered.</span>
-    <button class="owner-btn" onclick="window.location.href='prototype-pricing.html'">Upgrade to Standard <i class="fa-solid fa-arrow-right" style="margin-left:4px;"></i></button>
+  <!-- Owner-only context banner -->
+  <div class="pv-owner-bar">
+    <a class="pv-owner-back" onclick="showPage('dashboard')" style="cursor:pointer;"><i class="fa-solid fa-arrow-left" style="margin-right:5px;"></i> Back to Dashboard</a>
+    <span class="pv-owner-msg"><i class="fa-solid fa-eye" style="margin-right:5px;"></i> This is how your page appears to visitors</span>
   </div>
 
-  <div class="header" style="top: 0;">
-    <div class="header-left">
-      <div class="header-logo">B</div>
-      <span class="header-title"><strong>Benable</strong></span>
+  <!-- Top Nav -->
+  <div class="pv-topnav">
+    <div class="pv-topnav-left">
+      <div class="pv-logo"><div class="pv-logo-box">B</div> <span>Benable</span></div>
     </div>
-    <div class="header-right">
-      <button class="back-btn" onclick="showPage('dashboard')"><i class="fa-solid fa-arrow-left" style="font-size:12px;"></i> Back to Dashboard</button>
+    <div class="pv-topnav-right">
+      <div class="pv-cta-wrapper">
+        <button class="pv-btn-cta disabled" disabled>Book Now</button>
+        <div class="pv-cta-upgrade">Upgrade to add this to your page</div>
+      </div>
     </div>
   </div>
 
-  <div class="preview-page">
-
-    <!-- SEO Status -->
-    <div class="seo-status-bar">
-      <span class="seo-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
-      <span>This page is <strong>not indexed</strong> by search engines or AI. It won't appear in Google, ChatGPT, or other AI search results.</span>
-      <span class="upgrade-link" onclick="window.location.href='prototype-pricing.html'">Fix this <i class="fa-solid fa-arrow-right" style="margin-left:2px;"></i></span>
-    </div>
-
-    <!-- Hero -->
-    <div class="preview-hero">
-      <div class="biz-avatar">G</div>
-      <h2>Glow with Gigi</h2>
-      <div class="biz-meta">Spray Tanning &nbsp;&middot;&nbsp; Chicago, IL</div>
-      <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i> <span style="color: #374151; font-size: 13px;">5.0 (12 reviews)</span></div>
-    </div>
-
-    <!-- Ghost CTA Area -->
-    <div class="ghost-cta-area">
-      <div class="ghost-btn"><i class="fa-solid fa-phone"></i> Book Now</div>
-      <div class="ghost-label">Your call-to-action button would appear here for visitors</div>
-      <div class="ghost-upgrade" onclick="window.location.href='prototype-pricing.html'">Upgrade to Standard to enable <i class="fa-solid fa-arrow-right" style="margin-left:2px;"></i></div>
-    </div>
-
-    <!-- Stats -->
-    <div class="preview-stats">
-      <div class="preview-stat-card">
-        <div class="stat-num">5.0</div>
-        <div class="stat-label">Overall Rating</div>
-      </div>
-      <div class="preview-stat-card">
-        <div class="stat-num">3</div>
-        <div class="stat-label">Reviews this month</div>
-      </div>
-      <div class="preview-stat-card">
-        <div class="stat-num">100%</div>
-        <div class="stat-label">Positive Sentiment</div>
+  <!-- Hero Banner -->
+  <div class="pv-hero">
+    <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1200&h=300&fit=crop" alt="Banner" class="pv-hero-bg" />
+    <div class="pv-hero-overlay"></div>
+    <div class="pv-hero-content">
+      <div class="pv-hero-avatar">G</div>
+      <h1 class="pv-hero-name">Glow with Gigi</h1>
+      <div class="pv-hero-meta">Spray Tanning &nbsp;<i class="fa-solid fa-location-dot" style="font-size:11px; margin: 0 2px;"></i>&nbsp; Chicago, IL</div>
+      <div class="pv-hero-stars">
+        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+        <span>5.0</span> (12 reviews)
       </div>
     </div>
+  </div>
 
-    <!-- What Customers Love -->
-    <div class="preview-section">
-      <h3><i class="fa-solid fa-heart" style="color:#f59e0b; margin-right:6px;"></i> What Customers Love Most</h3>
-      <p style="font-size: 14px; color: #4b5563; margin-bottom: 12px;">Customers praise Glow with Gigi for the flawless, natural-looking spray tans and Gigi's warm, professional approach. Reviewers frequently highlight the convenient mobile service and attention to detail.</p>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-        <div style="background: #faf5ff; border: 1px solid #ede9fe; border-radius: 8px; padding: 10px 14px; font-size: 13px;"><i class="fa-solid fa-palette" style="color:#7c3aed; margin-right:6px;"></i> <strong>Natural-Looking Results</strong> <span style="color: #9ca3af;">— 42%</span></div>
-        <div style="background: #faf5ff; border: 1px solid #ede9fe; border-radius: 8px; padding: 10px 14px; font-size: 13px;"><i class="fa-solid fa-handshake" style="color:#7c3aed; margin-right:6px;"></i> <strong>Professional Service</strong> <span style="color: #9ca3af;">— 33%</span></div>
-        <div style="background: #faf5ff; border: 1px solid #ede9fe; border-radius: 8px; padding: 10px 14px; font-size: 13px;"><i class="fa-solid fa-house" style="color:#7c3aed; margin-right:6px;"></i> <strong>Convenient Mobile Service</strong> <span style="color: #9ca3af;">— 25%</span></div>
-        <div style="background: #faf5ff; border: 1px solid #ede9fe; border-radius: 8px; padding: 10px 14px; font-size: 13px;"><i class="fa-solid fa-sparkles" style="color:#7c3aed; margin-right:6px;"></i> <strong>Attention to Detail</strong> <span style="color: #9ca3af;">— 17%</span></div>
-      </div>
-      <div style="font-size: 11px; color: #9ca3af; margin-top: 8px;"><i class="fa-solid fa-wand-magic-sparkles" style="margin-right:4px;"></i> AI-powered analysis updates monthly on Standard — annually on Lite</div>
-    </div>
+  <div class="pv-body">
+    <!-- Two-column layout -->
+    <div class="pv-layout">
 
-    <!-- Reviews -->
-    <div class="preview-section">
-      <h3><i class="fa-solid fa-star" style="color:#f59e0b; margin-right:6px;"></i> Reviews</h3>
-      <div style="border-bottom: 1px solid #f3f4f6; padding: 14px 0;">
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-          <div style="width: 32px; height: 32px; background: #e0e7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600;">JM</div>
-          <strong style="font-size: 14px;">Jessica M.</strong>
-          <span style="color: #f59e0b;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span>
+      <!-- ── Left Sidebar ── -->
+      <div class="pv-sidebar">
+        <div class="pv-sidebar-section">
+          <div class="pv-sidebar-label">ABOUT</div>
+          <p class="pv-sidebar-text">Glow with Gigi is a mobile spray tanning business based in Chicago, IL. Services include airbrush tanning, rapid tans, full-body spray tans, and bridal party packages.</p>
         </div>
-        <p style="font-size: 13px; color: #4b5563;">Gigi was amazing! She came right to my apartment and gave me the most natural-looking tan. Highly recommend!</p>
-      </div>
-      <div style="border-bottom: 1px solid #f3f4f6; padding: 14px 0;">
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-          <div style="width: 32px; height: 32px; background: #fce7f3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600;">AT</div>
-          <strong style="font-size: 14px;">Amanda T.</strong>
-          <span style="color: #f59e0b;"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span>
+        <div class="pv-sidebar-section">
+          <a class="pv-sidebar-link" href="#"><i class="fa-solid fa-globe"></i> glowwithgigi.glossgenius.com <i class="fa-solid fa-chevron-right pv-link-arrow"></i></a>
         </div>
-        <p style="font-size: 13px; color: #4b5563;">Best spray tan in Chicago, hands down. Gigi is so professional and the results lasted over a week!</p>
+        <div class="pv-sidebar-section pv-awards-owner">
+          <div class="pv-owner-badge"><i class="fa-solid fa-eye"></i> Only you can see this</div>
+          <div class="pv-sidebar-label">AWARDS</div>
+          <a class="pv-sidebar-link pv-award-link" href="#" onclick="openPreviewAwardsGate(); return false;">
+            <i class="fa-solid fa-trophy" style="color:#d97706;"></i> Best Spray Tan Artist 2025
+            <i class="fa-solid fa-chevron-right pv-link-arrow"></i>
+          </a>
+          <a class="pv-sidebar-link pv-award-link" href="#" onclick="openPreviewAwardsGate(); return false;">
+            <i class="fa-solid fa-trophy" style="color:#d97706;"></i> Top Mobile Beauty Service
+            <i class="fa-solid fa-chevron-right pv-link-arrow"></i>
+          </a>
+          <button class="pv-award-add-btn" onclick="openPreviewAwardsGate()" style="margin-top: 8px;">
+            <i class="fa-solid fa-plus" style="margin-right:4px;"></i> Add Award
+          </button>
+        </div>
+        <div class="pv-sidebar-section">
+          <div class="pv-sidebar-label">FIND US ON</div>
+          <div class="pv-social-icons">
+            <a class="pv-social-icon"><i class="fa-brands fa-instagram"></i></a>
+            <a class="pv-social-icon"><i class="fa-brands fa-tiktok"></i></a>
+            <a class="pv-social-icon"><i class="fa-brands fa-facebook-f"></i></a>
+          </div>
+        </div>
+        <div class="pv-sidebar-section">
+          <div class="pv-sidebar-label">ADDRESS</div>
+          <div class="pv-sidebar-row">Chicago, IL <i class="fa-regular fa-copy" style="color:#9ca3af; margin-left: auto; cursor:pointer;"></i></div>
+        </div>
+        <div class="pv-sidebar-section">
+          <div class="pv-sidebar-label">CONTACT</div>
+          <a class="pv-sidebar-link"><i class="fa-solid fa-phone"></i> (312) 555-0147 <i class="fa-solid fa-chevron-right pv-link-arrow"></i></a>
+          <a class="pv-sidebar-link"><i class="fa-solid fa-envelope"></i> gigi@glowwithgigi.com <i class="fa-solid fa-chevron-right pv-link-arrow"></i></a>
+        </div>
+        <div class="pv-sidebar-section">
+          <div class="pv-sidebar-label">HOURS</div>
+          <div class="pv-hours">
+            <div class="pv-hours-row"><span>Mon</span><span>9 AM – 7 PM</span></div>
+            <div class="pv-hours-row"><span>Tue</span><span>9 AM – 7 PM</span></div>
+            <div class="pv-hours-row"><span>Wed</span><span>9 AM – 7 PM</span></div>
+            <div class="pv-hours-row"><span>Thu</span><span>9 AM – 7 PM</span></div>
+            <div class="pv-hours-row"><span>Fri</span><span>9 AM – 8 PM</span></div>
+            <div class="pv-hours-row"><span class="pv-hours-today">Sat</span><span class="pv-hours-today">10 AM – 6 PM</span></div>
+            <div class="pv-hours-row"><span>Sun</span><span>10 AM – 5 PM</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Main Content ── -->
+      <div class="pv-main">
+
+        <!-- Tab Bar -->
+        <div class="pv-tab-bar">
+          <div class="pv-tab active">Overview</div>
+          <div class="pv-tab">Mentions</div>
+          <div class="pv-tab">Reviews</div>
+          <div class="pv-tab">Photos</div>
+        </div>
+
+        <!-- Stats -->
+        <div class="pv-stats-row">
+          <div class="pv-stat-card">
+            <div class="pv-stat-label">OVERALL RATING</div>
+            <div class="pv-stat-value">5.0 <span class="pv-stat-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span></div>
+            <div class="pv-stat-sub">out of 5 stars</div>
+          </div>
+          <div class="pv-stat-card">
+            <div class="pv-stat-label">NEW THIS MONTH</div>
+            <div class="pv-stat-value">3 <span style="color:#10b981; font-size: 14px; font-weight: 600;"><i class="fa-solid fa-arrow-trend-up"></i></span></div>
+            <div class="pv-stat-sub">reviews in last 30 days</div>
+          </div>
+          <div class="pv-stat-card">
+            <div class="pv-stat-label">POSITIVE SENTIMENT</div>
+            <div class="pv-stat-value">100%</div>
+            <div class="pv-stat-sub">of reviews are positive</div>
+          </div>
+        </div>
+
+        <!-- What Customers Love Most -->
+        <div class="pv-content-section">
+          <h3><span style="color:#f59e0b; margin-right:6px;"><i class="fa-solid fa-heart"></i><i class="fa-solid fa-heart"></i></span> What Customers Love Most</h3>
+          <p class="pv-ai-summary">Customers rave about Glow with Gigi's ability to deliver flawless, natural-looking spray tans. She is highly praised for her professional, warm approach, making clients feel at ease while delivering spectacular results with attention to detail.</p>
+          <div class="pv-ai-badge"><i class="fa-solid fa-wand-magic-sparkles"></i> AI-powered summary based on customer reviews</div>
+          <div class="pv-love-grid">
+            <div class="pv-love-card">
+              <div class="pv-love-icon" style="background:#faf5ff; color:#7c3aed;"><i class="fa-solid fa-palette"></i></div>
+              <div>
+                <div class="pv-love-title">Natural-Looking Results</div>
+                <div class="pv-love-pct">42% mention this</div>
+              </div>
+              <i class="fa-solid fa-chevron-right pv-love-arrow"></i>
+            </div>
+            <div class="pv-love-card">
+              <div class="pv-love-icon" style="background:#eff6ff; color:#2563eb;"><i class="fa-solid fa-handshake"></i></div>
+              <div>
+                <div class="pv-love-title">Exceptional Professionalism</div>
+                <div class="pv-love-pct">37% mention this</div>
+              </div>
+              <i class="fa-solid fa-chevron-right pv-love-arrow"></i>
+            </div>
+            <div class="pv-love-card">
+              <div class="pv-love-icon" style="background:#fef3c7; color:#d97706;"><i class="fa-solid fa-face-smile"></i></div>
+              <div>
+                <div class="pv-love-title">Comfortable Client Experience</div>
+                <div class="pv-love-pct">18% mention this</div>
+              </div>
+              <i class="fa-solid fa-chevron-right pv-love-arrow"></i>
+            </div>
+            <div class="pv-love-card">
+              <div class="pv-love-icon" style="background:#f0fdf4; color:#16a34a;"><i class="fa-solid fa-comments"></i></div>
+              <div>
+                <div class="pv-love-title">Proactive Communication</div>
+                <div class="pv-love-pct">14% mention this</div>
+              </div>
+              <i class="fa-solid fa-chevron-right pv-love-arrow"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Featured by Creators & Influencers -->
+        <div class="pv-content-section">
+          <h3><span style="margin-right:6px;">#</span> Featured by Creators & Influencers</h3>
+          <div class="pv-creators-grid">
+            <div class="pv-creator-card">
+              <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=300&h=400&fit=crop" class="pv-creator-img" />
+              <div class="pv-creator-platform ig-bg"><i class="fa-brands fa-instagram"></i></div>
+              <div class="pv-creator-info">
+                <div class="pv-creator-name">@beautybylaura</div>
+                <div class="pv-creator-desc">Got the most amazing spray tan from @glowwithgigi! Natural bronze perfection...</div>
+              </div>
+            </div>
+            <div class="pv-creator-card">
+              <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&h=400&fit=crop" class="pv-creator-img" />
+              <div class="pv-creator-platform tt-bg"><i class="fa-brands fa-tiktok"></i></div>
+              <div class="pv-creator-info">
+                <div class="pv-creator-name">@chicagoglowups</div>
+                <div class="pv-creator-desc">Best mobile spray tan in Chicago — the results were insane...</div>
+              </div>
+            </div>
+            <div class="pv-creator-card">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=400&fit=crop" class="pv-creator-img" />
+              <div class="pv-creator-platform ig-bg"><i class="fa-brands fa-instagram"></i></div>
+              <div class="pv-creator-info">
+                <div class="pv-creator-name">@chicagobrides</div>
+                <div class="pv-creator-desc">Bridal party glow courtesy of @glowwithgigi — 6 ladies ready for the big day!</div>
+              </div>
+            </div>
+          </div>
+          <div class="pv-creators-grid" style="margin-top: 16px;">
+            <div class="pv-creator-card">
+              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300&h=400&fit=crop" class="pv-creator-img" />
+              <div class="pv-creator-platform" style="background:#1877F2;"><i class="fa-brands fa-facebook-f"></i></div>
+              <div class="pv-creator-info">
+                <div class="pv-creator-name">Sarah Mitchell</div>
+                <div class="pv-creator-desc">Gigi came right to my apartment and gave me the most natural-looking tan ever...</div>
+              </div>
+            </div>
+            <div class="pv-creator-card">
+              <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=300&h=400&fit=crop" class="pv-creator-img" />
+              <div class="pv-creator-platform" style="background:#1877F2;"><i class="fa-brands fa-facebook-f"></i></div>
+              <div class="pv-creator-info">
+                <div class="pv-creator-name">Amanda Torres</div>
+                <div class="pv-creator-desc">The greatest spray tan experience. Glow with Gigi is the best in the city...</div>
+              </div>
+            </div>
+            <div class="pv-creator-card">
+              <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=300&h=400&fit=crop" class="pv-creator-img" />
+              <div class="pv-creator-platform ig-bg"><i class="fa-brands fa-instagram"></i></div>
+              <div class="pv-creator-info">
+                <div class="pv-creator-name">@windycitybrides</div>
+                <div class="pv-creator-desc">How it looks in the sun — stunning! Congratulations to the bride...</div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:center; margin-top:16px;">
+            <button class="pv-show-more">Show more &middot; 4 more</button>
+          </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="pv-content-section">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+            <h3><i class="fa-solid fa-star" style="color:#f59e0b; margin-right:6px;"></i> Reviews</h3>
+            <span style="font-size:13px; color:#9ca3af;">Most relevant <i class="fa-solid fa-chevron-down" style="margin-left:4px; font-size:10px;"></i></span>
+          </div>
+
+          <div class="pv-review">
+            <div class="pv-review-header">
+              <div class="pv-review-avatar" style="background:#e0e7ff;">ES</div>
+              <div>
+                <div class="pv-review-name">Erinn Sander <span class="pv-review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span></div>
+                <div class="pv-review-date">3 days ago</div>
+              </div>
+              <div class="pv-review-source"><i class="fa-brands fa-facebook-f"></i></div>
+            </div>
+            <p class="pv-review-text">I will always recommend Gigi to friends, family, strangers, EVERYONE. Working with her was amazing and stress-free. After a few email exchanges, we felt comfortable moving forward. She instantly made us feel at ease with her bubbly personality and trained eye for detail!</p>
+          </div>
+
+          <div class="pv-review">
+            <div class="pv-review-header">
+              <div class="pv-review-avatar" style="background:#fce7f3;">KM</div>
+              <div>
+                <div class="pv-review-name">Kelsey Marie <span class="pv-review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span></div>
+                <div class="pv-review-date">5 days ago</div>
+              </div>
+              <div class="pv-review-source"><i class="fa-brands fa-facebook-f"></i></div>
+            </div>
+            <p class="pv-review-text">Gigi did an absolutely phenomenal job! She was inviting, thoughtful, and never seemed overwhelmed. I cannot recommend her enough — we LOVED her and her work!</p>
+          </div>
+
+          <div class="pv-review">
+            <div class="pv-review-header">
+              <div class="pv-review-avatar" style="background:#dbeafe;">LA</div>
+              <div>
+                <div class="pv-review-name">Lexie Alplanulp <span class="pv-review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span></div>
+                <div class="pv-review-date">1 week ago</div>
+              </div>
+              <div class="pv-review-source"><i class="fa-brands fa-facebook-f"></i></div>
+            </div>
+            <p class="pv-review-text">Working with Gigi was an absolute dream! She is so sweet and professional. The tan speaks for itself — absolutely breathtaking!</p>
+          </div>
+
+          <div class="pv-review">
+            <div class="pv-review-header">
+              <div class="pv-review-avatar" style="background:#fef3c7; color:#92400e;">SB</div>
+              <div>
+                <div class="pv-review-name">Soph Bunde <span class="pv-review-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span></div>
+                <div class="pv-review-date">2 weeks ago</div>
+              </div>
+              <div class="pv-review-source"><i class="fa-brands fa-google"></i></div>
+            </div>
+            <p class="pv-review-text">Could not recommend Glow with Gigi more — the tan was so true to the feeling of the day. Her editing was true to capturing the moment. I would pick her again 10x over and cannot recommend her enough!</p>
+          </div>
+
+          <div style="text-align:center; margin-top:16px; font-size:13px; color:#9ca3af;">
+            <i class="fa-solid fa-chevron-left" style="margin-right:12px; cursor:pointer;"></i> 1 of 3 <i class="fa-solid fa-chevron-right" style="margin-left:12px; cursor:pointer;"></i>
+          </div>
+        </div>
+
+        <!-- Photos -->
+        <div class="pv-content-section">
+          <h3><i class="fa-solid fa-camera" style="color:#7c3aed; margin-right:6px;"></i> Photos</h3>
+          <div class="pv-photos-grid">
+            <img src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=600&h=400&fit=crop" class="pv-photo-main" />
+            <div class="pv-photos-thumbs">
+              <img src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=200&h=140&fit=crop" class="pv-photo-thumb" />
+              <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&h=140&fit=crop" class="pv-photo-thumb" />
+              <div class="pv-photo-thumb pv-photo-more" style="background: linear-gradient(135deg, #7c3aed, #a855f7);">
+                <span><i class="fa-solid fa-camera"></i> +5 more</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /pv-main -->
+    </div><!-- /pv-layout -->
+
+    <!-- Footer -->
+    <div class="pv-footer">
+      <div class="pv-logo-box" style="width:36px; height:36px; font-size:16px; margin: 0 auto 8px;">B</div>
+      <div style="font-weight:700; font-size:15px;">Benable</div>
+      <div style="font-size:12px; color:#9ca3af; margin-top:2px;">For things worth sharing</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ AWARD EDIT MODAL ══════════════════ -->
+<div class="modal-backdrop" id="awardModal">
+  <div class="award-modal-content">
+    <div class="award-modal-header">
+      <h2 id="awardModalTitle">Edit Award</h2>
+      <button class="award-modal-close" onclick="closeAwardModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="award-modal-body">
+      <div class="form-group">
+        <label>Award Name *</label>
+        <input type="text" id="awardName" value="Best Spray Tan Artist 2025" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Organization</label>
+          <input type="text" id="awardOrg" value="Chicago Beauty Awards" />
+        </div>
+        <div class="form-group">
+          <label>Year</label>
+          <input type="text" id="awardYear" value="2025" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea id="awardDesc">Recognized as the best spray tan artist in the greater Chicago area</textarea>
+      </div>
+      <div class="form-group">
+        <label>Source URL</label>
+        <input type="text" id="awardUrl" value="https://chicagobeautyawards.com/best-spray-tan-25" />
       </div>
     </div>
-
-    <!-- Ghost Awards Section -->
-    <div class="preview-section" style="border: 2px dashed #e5e7eb; background: #fafafa; text-align: center; padding: 32px;">
-      <div style="font-size: 28px; margin-bottom: 8px; color: #d1d5db;"><i class="fa-solid fa-trophy"></i></div>
-      <h3>Awards & Certifications</h3>
-      <p style="font-size: 13px; color: #9ca3af; margin-top: 4px;">Showcase your credentials here — available on Standard</p>
-      <button style="margin-top: 12px; background: #7c3aed; color: #fff; border: none; border-radius: 8px; padding: 8px 20px; font-size: 13px; font-weight: 600; cursor: pointer;" onclick="window.location.href='prototype-pricing.html'">Upgrade to Add Awards</button>
+    <div class="award-modal-footer">
+      <button class="btn-cancel" onclick="closeAwardModal()">Cancel</button>
+      <button class="btn-save" onclick="saveAward()">Save Changes</button>
     </div>
+  </div>
+</div>
 
+<!-- ══════════════════ UPGRADE GATE MODAL ══════════════════ -->
+<div class="modal-backdrop" id="upgradeGateModal">
+  <div class="upgrade-gate-content">
+    <div class="gate-icon"><i class="fa-solid fa-lock"></i></div>
+    <h2 id="upgradeGateTitle">Upgrade to save your changes</h2>
+    <p id="upgradeGateDesc">You've set up your award — great! To save it and display it on your Credibility Page, upgrade to Standard.</p>
+    <button class="btn-save" onclick="window.location.href='prototype-pricing.html'">Upgrade to Standard — $29/mo</button>
+    <button class="gate-dismiss" onclick="closeUpgradeGate()">I'll do this later</button>
+  </div>
+</div>
+
+<!-- ══════════════════ IMPORT MENTION MODAL ══════════════════ -->
+<div class="modal-backdrop" id="importModal">
+  <div class="award-modal-content">
+    <div class="award-modal-header">
+      <h2 id="importModalTitle">Import Mention</h2>
+      <button class="award-modal-close" onclick="closeImportModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="award-modal-body">
+      <!-- Step 1: URL Input -->
+      <div id="importStep1">
+        <p style="font-size: 14px; color: #6b7280; margin-bottom: 16px;">Paste a link to a social media post, review, or article that mentions your business.</p>
+        <div class="form-group">
+          <label>URL *</label>
+          <input type="text" id="importUrl" placeholder="https://instagram.com/p/..." />
+        </div>
+        <div style="text-align: right;">
+          <button class="btn-save" style="background: #7c3aed; color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 14px; font-weight: 600; cursor: pointer;" onclick="simulateImport()"><i class="fa-solid fa-file-import" style="margin-right: 6px;"></i> Import</button>
+        </div>
+      </div>
+      <!-- Step 2: Loading -->
+      <div id="importStep2" style="display: none; text-align: center; padding: 40px 0;">
+        <div class="import-spinner"></div>
+        <p style="font-size: 14px; color: #6b7280; margin-top: 16px;">Importing mention...</p>
+        <p style="font-size: 12px; color: #9ca3af; margin-top: 4px;">Fetching post details and metadata</p>
+      </div>
+      <!-- Step 3: Preview -->
+      <div id="importStep3" style="display: none;">
+        <p style="font-size: 14px; color: #6b7280; margin-bottom: 16px;">We found this mention — review the details below.</p>
+        <div class="import-preview">
+          <div class="import-preview-header">
+            <div class="social-post-platform ig-bg" id="importPreviewPlatform"><i class="fa-brands fa-instagram"></i></div>
+            <div>
+              <div class="social-post-author" id="importPreviewAuthor">@imported_user</div>
+              <div class="social-post-time">Just now</div>
+            </div>
+          </div>
+          <div class="import-preview-video">
+            <div class="import-video-thumb" id="importVideoThumb" style="background: linear-gradient(160deg, #833AB4, #E1306C);">
+              <div class="mention-card-play"><i class="fa-solid fa-play"></i></div>
+              <div class="import-video-duration"><i class="fa-solid fa-clock"></i> 0:34</div>
+            </div>
+            <div class="import-video-details">
+              <div class="import-preview-text" id="importPreviewText">"Amazing spray tan experience! @glowwithgigi is the best in Chicago. Booking again next month for sure!"</div>
+              <div class="import-preview-stats">
+                <span><i class="fa-solid fa-heart"></i> 94</span>
+                <span><i class="fa-solid fa-comment"></i> 12</span>
+                <span><i class="fa-solid fa-share"></i> 3</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="award-modal-footer" id="importFooter" style="display: none;">
+      <button class="btn-cancel" onclick="closeImportModal()">Cancel</button>
+      <button class="btn-save" onclick="saveImportedMention()">Save Mention</button>
+    </div>
   </div>
 </div>
 
@@ -1071,6 +2385,25 @@
     if (event && event.currentTarget) {
       event.currentTarget.classList.add('active');
     }
+  }
+
+  // ── Analytics Sub-Tabs ──
+  function showAnalyticsTab(tab, el) {
+    document.querySelectorAll('#section-analytics .analytics-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.getElementById('analyticsTab-' + tab).classList.add('active');
+    el.closest('.tab-bar').querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    el.classList.add('active');
+    // Dismiss red dot on SEO tab when clicked
+    var dot = el.querySelector('.tab-dot');
+    if (dot) dot.style.display = 'none';
+  }
+
+  // ── Navigate to section from checklist ──
+  function navTo(section) {
+    var map = { business: 1, analytics: 3, awards: 2, alerts: 4 };
+    var navItems = document.querySelectorAll('.nav-item');
+    var idx = map[section];
+    if (navItems[idx]) navItems[idx].click();
   }
 
   // ── Page Toggle (Dashboard vs Preview) ──
@@ -1094,10 +2427,201 @@
   function closeNudge() {
     document.getElementById('nudgeModal').classList.remove('visible');
   }
-  // Close modal on backdrop click
   document.getElementById('nudgeModal').addEventListener('click', function(e) {
     if (e.target === this) closeNudge();
   });
+
+  // ── Award Modal ──
+  function openAwardModal(mode) {
+    var modal = document.getElementById('awardModal');
+    var title = document.getElementById('awardModalTitle');
+    if (mode === 'edit') {
+      title.textContent = 'Edit Award';
+    } else {
+      title.textContent = 'Add Award';
+      document.getElementById('awardName').value = '';
+      document.getElementById('awardOrg').value = '';
+      document.getElementById('awardYear').value = '';
+      document.getElementById('awardDesc').value = '';
+      document.getElementById('awardUrl').value = '';
+    }
+    modal.classList.add('visible');
+  }
+  function closeAwardModal() {
+    document.getElementById('awardModal').classList.remove('visible');
+  }
+  document.getElementById('awardModal').addEventListener('click', function(e) {
+    if (e.target === this) closeAwardModal();
+  });
+
+  // ── Dismiss notification dot ──
+  function dismissDot(el) {
+    var dot = el.querySelector('.nav-dot');
+    if (dot) dot.style.display = 'none';
+  }
+
+  // ── Save CTA → Upgrade Gate ──
+  function saveCTA() {
+    var text = document.getElementById('ctaButtonText').value.trim();
+    if (!text) {
+      document.getElementById('ctaButtonText').style.borderColor = '#ef4444';
+      document.getElementById('ctaButtonText').focus();
+      return;
+    }
+    document.getElementById('ctaButtonText').style.borderColor = '';
+    document.getElementById('upgradeGateTitle').textContent = 'Upgrade to save your CTA';
+    document.getElementById('upgradeGateDesc').textContent = "You've set your button to \u201C" + text + "\u201D — great! To save it and display it on your Credibility Page, upgrade to Standard.";
+    document.getElementById('upgradeGateModal').classList.add('visible');
+  }
+
+  // ── Save Award → Upgrade Gate ──
+  function saveAward() {
+    closeAwardModal();
+    setTimeout(function() {
+      openUpgradeGate();
+    }, 200);
+  }
+  function openUpgradeGate() {
+    document.getElementById('upgradeGateTitle').textContent = 'Upgrade to save your changes';
+    document.getElementById('upgradeGateDesc').textContent = "You've set up your award — great! To save it and display it on your Credibility Page, upgrade to Standard.";
+    document.getElementById('upgradeGateModal').classList.add('visible');
+  }
+  function openAnalyticsGate() {
+    document.getElementById('upgradeGateTitle').textContent = 'Upgrade to see more!';
+    document.getElementById('upgradeGateDesc').textContent = 'Get deeper analytics, detailed engagement reports, and full social media insights with Standard.';
+    document.getElementById('upgradeGateModal').classList.add('visible');
+  }
+  function openPreviewAwardsGate() {
+    document.getElementById('upgradeGateTitle').textContent = 'Upgrade to add awards';
+    document.getElementById('upgradeGateDesc').textContent = 'Awards & certifications help build trust with potential customers. Upgrade to Standard to add them to your Credibility Page.';
+    document.getElementById('upgradeGateModal').classList.add('visible');
+  }
+  function openMentionsGate() {
+    document.getElementById('upgradeGateTitle').textContent = 'Upgrade to see more!';
+    document.getElementById('upgradeGateDesc').textContent = 'You have 7 more mentions waiting. Upgrade to Standard to view all mentions, manage your social presence, and get notified of new ones.';
+    document.getElementById('upgradeGateModal').classList.add('visible');
+  }
+  function closeUpgradeGate() {
+    document.getElementById('upgradeGateModal').classList.remove('visible');
+  }
+  document.getElementById('upgradeGateModal').addEventListener('click', function(e) {
+    if (e.target === this) closeUpgradeGate();
+  });
+
+  // ── Import Mention Modal ──
+  function openImportModal() {
+    document.getElementById('importStep1').style.display = '';
+    document.getElementById('importStep2').style.display = 'none';
+    document.getElementById('importStep3').style.display = 'none';
+    document.getElementById('importFooter').style.display = 'none';
+    document.getElementById('importUrl').value = '';
+    document.getElementById('importModal').classList.add('visible');
+  }
+  function closeImportModal() {
+    document.getElementById('importModal').classList.remove('visible');
+  }
+  document.getElementById('importModal').addEventListener('click', function(e) {
+    if (e.target === this) closeImportModal();
+  });
+
+  function simulateImport() {
+    var url = document.getElementById('importUrl').value.trim();
+    if (!url) {
+      document.getElementById('importUrl').style.borderColor = '#ef4444';
+      return;
+    }
+    document.getElementById('importUrl').style.borderColor = '';
+    document.getElementById('importStep1').style.display = 'none';
+    document.getElementById('importStep2').style.display = '';
+    setTimeout(function() {
+      var author = '@imported_user';
+      var gradient = 'linear-gradient(160deg, #833AB4, #E1306C)';
+      var platformEl = document.getElementById('importPreviewPlatform');
+      platformEl.className = 'social-post-platform ig-bg';
+      if (url.indexOf('tiktok') !== -1) {
+        author = '@tiktok_user'; gradient = 'linear-gradient(160deg, #010101, #25F4EE)';
+        platformEl.className = 'social-post-platform tt-bg';
+        platformEl.innerHTML = '<i class="fa-brands fa-tiktok"></i>';
+      } else if (url.indexOf('twitter') !== -1 || url.indexOf('x.com') !== -1) {
+        author = '@twitter_user'; gradient = 'linear-gradient(160deg, #1d9bf0, #0d8bd9)';
+        platformEl.innerHTML = '<i class="fa-brands fa-x-twitter"></i>';
+        platformEl.style.background = '#000';
+      } else if (url.indexOf('facebook') !== -1) {
+        author = 'Facebook User'; gradient = 'linear-gradient(160deg, #1877F2, #0d6efd)';
+        platformEl.className = 'social-post-platform fb-bg';
+        platformEl.innerHTML = '<i class="fa-brands fa-facebook-f"></i>';
+      } else {
+        author = '@beauty_creator';
+        platformEl.innerHTML = '<i class="fa-brands fa-instagram"></i>';
+      }
+      document.getElementById('importPreviewAuthor').textContent = author;
+      document.getElementById('importVideoThumb').style.background = gradient;
+      document.getElementById('importStep2').style.display = 'none';
+      document.getElementById('importStep3').style.display = '';
+      document.getElementById('importFooter').style.display = '';
+    }, 1500);
+  }
+
+  function saveImportedMention() {
+    closeImportModal();
+    setTimeout(function() {
+      document.getElementById('upgradeGateTitle').textContent = 'Upgrade to save your mention';
+      document.getElementById('upgradeGateDesc').textContent = "You've imported a new mention — great! To save it and display it on your Credibility Page, upgrade to Standard.";
+      document.getElementById('upgradeGateModal').classList.add('visible');
+    }, 200);
+  }
+
+  // ── Drag-and-Drop for Mention Cards ──
+  (function() {
+    var grid = document.querySelector('.mention-grid');
+    if (!grid) return;
+    var dragged = null;
+
+    grid.querySelectorAll('.mention-card').forEach(function(card) {
+      card.setAttribute('draggable', 'true');
+
+      card.addEventListener('dragstart', function(e) {
+        dragged = this;
+        this.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+      });
+
+      card.addEventListener('dragend', function() {
+        this.classList.remove('dragging');
+        grid.querySelectorAll('.mention-card').forEach(function(c) {
+          c.classList.remove('drag-over');
+        });
+        dragged = null;
+      });
+
+      card.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        if (this !== dragged) {
+          this.classList.add('drag-over');
+        }
+      });
+
+      card.addEventListener('dragleave', function() {
+        this.classList.remove('drag-over');
+      });
+
+      card.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('drag-over');
+        if (dragged && dragged !== this) {
+          var cards = Array.from(grid.querySelectorAll('.mention-card'));
+          var fromIdx = cards.indexOf(dragged);
+          var toIdx = cards.indexOf(this);
+          if (fromIdx < toIdx) {
+            grid.insertBefore(dragged, this.nextSibling);
+          } else {
+            grid.insertBefore(dragged, this);
+          }
+        }
+      });
+    });
+  })();
 </script>
 
 </body>
